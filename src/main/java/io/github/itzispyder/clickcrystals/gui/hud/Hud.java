@@ -10,8 +10,8 @@ import io.github.itzispyder.clickcrystals.util.minecraft.RenderUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.Window;
+import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public abstract class Hud implements HudRenderCallback, Positionable, Global {

@@ -6,8 +6,8 @@ import io.github.itzispyder.clickcrystals.modules.modules.clickcrystals.InGameHu
 import io.github.itzispyder.clickcrystals.util.minecraft.PlayerUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.RenderUtils;
 import io.github.itzispyder.clickcrystals.util.misc.CameraRotator;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class RotationRelativeHud extends Hud {
 

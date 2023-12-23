@@ -1,5 +1,7 @@
 package io.github.itzispyder.clickcrystals.mixins;
 
+import io.github.itzispyder.clickcrystals.Global;
+import io.github.itzispyder.clickcrystals.gui.hud.Hud;
 import io.github.itzispyder.clickcrystals.modules.Module;
 import io.github.itzispyder.clickcrystals.modules.modules.rendering.HealthAsBar;
 import io.github.itzispyder.clickcrystals.modules.modules.rendering.NoOverlay;
@@ -16,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
-public abstract class MixinInGameHud {
+public abstract class MixinInGameHud implements Global {
 
     @Inject(method = "renderHealthBar", at = @At("HEAD"), cancellable = true)
     public void renderHealthBar(MatrixStack context, PlayerEntity player, int x, int y, int lines, int regeneratingHeartIndex, float maxHealth, int lastHealth, int health, int absorption, boolean blinking, CallbackInfo ci) {
@@ -55,5 +57,17 @@ public abstract class MixinInGameHud {
     public void renderOverlay(MatrixStack context, ScoreboardObjective objective, CallbackInfo ci) {
         Module noScoreboard = Module.get(NoScoreboard.class);
         if (noScoreboard.isEnabled()) ci.cancel();
+    }
+
+    @Inject(method = "render", at = @At("TAIL"))
+    public void renderHuds(MatrixStack context, float tickDelta, CallbackInfo ci) {
+        if (mc.currentScreen != null) {
+            return;
+        }
+        for (Hud hud : system.huds().values()) {
+            if (hud.canRender()) {
+                hud.render(context);
+            }
+        }
     }
 }

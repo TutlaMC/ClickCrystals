@@ -48,6 +48,7 @@ import org.lwjgl.glfw.GLFW;
  * TODO: (5) Modrinth Release
  * TODO: (6) GitHub Release
  * TODO: (7) PlanetMC Release
+ * TODO: (7) CurseForge Release
  * TODO: (8) Update https://itzispyder.github.io/clickcrystals/info
  * TODO: (9) Discord Announcement
  */
@@ -96,7 +97,7 @@ public final class ClickCrystals implements ModInitializer {
     public static final String modId   = "clickcrystals";
     public static final String prefix  = "[ClickCrystals] ";
     public static final String starter = "§7[§bClick§3Crystals§7] §r";
-    public static final String version = "1.1.5";
+    public static final String version = "1.1.6";
 
     public static ClickCrystalsInfo info = new ClickCrystalsInfo(version);
 
@@ -116,7 +117,7 @@ public final class ClickCrystals implements ModInitializer {
         this.init();
         this.startTicking();
         system.println("-> requesting mod info...");
-        this.requestModInfo();
+        ClickCrystals.requestModInfo();
         system.println("-> connecting to discord...");
         this.initRpc();
         system.println("-> loading config...");
@@ -193,12 +194,6 @@ public final class ClickCrystals implements ModInitializer {
         system.addCommand(new ClickScriptCommand());
 
         // Hud
-        system.addHud(new ColorOverlayHud());
-        system.addHud(new ModuleListTextHud());
-        system.addHud(new ClickPerSecondHud());
-        system.addHud(new ArmorItemHud());
-        system.addHud(new NotificationHud());
-
         system.addHud(new IconRelativeHud());
         system.addHud(new PingRelativeHud());
         system.addHud(new FpsRelativeHud());
@@ -210,6 +205,13 @@ public final class ClickCrystals implements ModInitializer {
         system.addHud(new CrosshairTargetRelativeHud());
         system.addHud(new RotationRelativeHud());
         system.addHud(new ResourceRelativeHud());
+
+        system.addHud(new ColorOverlayHud());
+        system.addHud(new ModuleListTextHud());
+        system.addHud(new ClickPerSecondHud());
+        system.addHud(new ArmorItemHud());
+        system.addHud(new NotificationHud());
+        system.addHud(new EntityIndicatorHud());
     }
 
     public void initModules() {
@@ -277,6 +279,7 @@ public final class ClickCrystals implements ModInitializer {
         system.addModule(new Zoom());
         system.addModule(new ViewModel());
         system.addModule(new GhostTotem());
+        system.addModule(new EntityIndicator());
     }
 
     public static boolean matchLatestVersion() {
@@ -287,7 +290,7 @@ public final class ClickCrystals implements ModInitializer {
         return info.getLatest();
     }
 
-    private void requestModInfo() {
+    public static void requestModInfo() {
         ClickCrystalsInfo.request();
         system.capeManager.reloadTextures();
     }

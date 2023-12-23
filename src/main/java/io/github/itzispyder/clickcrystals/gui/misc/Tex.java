@@ -9,6 +9,7 @@ public final class Tex {
     public static final Identifier ICON = new Identifier(modId, "icon.png");
     public static final Identifier ICON_PREMIUM = new Identifier(modId, "icon_premium.png");
     public static final Identifier ICON_CLICKSCRIPT = new Identifier(modId, "icon_clickscript.png");
+    public static final Identifier ICON_NEW = new Identifier(modId, "icon_new-old_round.png");
 
     public static class Shapes {
         public static final Identifier CIRCLE_DARK_GRAY = new Identifier(modId, "textures/display/shapes/circle/circle_dark_gray.png");
@@ -64,6 +65,7 @@ public final class Tex {
 
     public static class Defaults {
         public static final Identifier ITEM_WIDGET = new Identifier(modId, "textures/gui/item_widget.png");
+        public static final Identifier OPTIONS_BACKGROUND = new Identifier(modId, "textures/gui/options_background.png");
         public static final Identifier NO_TOTEMS_MEME = new Identifier(modId, "textures/overlays/no_totem.png");
         public static final Identifier NO_TOTEMS_ICON = new Identifier(modId, "textures/overlays/totemless_icon.png");
     }
@@ -71,6 +73,7 @@ public final class Tex {
     public static class Socials {
         public static final Identifier DISCORD = new Identifier(modId, "textures/display/socials/discord.png");
         public static final Identifier MODRINTH = new Identifier(modId, "textures/display/socials/modrinth.png");
+        public static final Identifier CURSEFORGE = new Identifier(modId, "textures/display/socials/curseforge.png");
         public static final Identifier YOUTUBE = new Identifier(modId, "textures/display/socials/youtube.png");
         public static final Identifier PLANETMC = new Identifier(modId, "textures/display/socials/planetmc.png");
     }
@@ -78,5 +81,9 @@ public final class Tex {
     public static class Backdrops {
         public static final Identifier BACKDROP_0 = new Identifier(modId, "textures/gui/backdrop/backdrop.png");
         public static final Identifier BACKDROP_1 = new Identifier(modId, "textures/gui/backdrop/backdrop_1.png");
+    }
+
+    public static class Overlays {
+        public static final Identifier DIRECTION = new Identifier(modId, "textures/overlays/direction.png");
     }
 }

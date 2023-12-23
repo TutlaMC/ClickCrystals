@@ -206,4 +206,12 @@ public final class RenderUtils {
     public static void drawItem(MatrixStack context, ItemStack item, int x, int y) {
         drawItem(context, item, x, y, 1.0F);
     }
+
+    public static int winWidth() {
+        return mc.getWindow().getScaledWidth();
+    }
+
+    public static int winHeight() {
+        return mc.getWindow().getScaledHeight();
+    }
 }

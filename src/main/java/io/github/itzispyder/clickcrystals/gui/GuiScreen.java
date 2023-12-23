@@ -1,14 +1,17 @@
 package io.github.itzispyder.clickcrystals.gui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.itzispyder.clickcrystals.Global;
-import io.github.itzispyder.clickcrystals.gui.elements.Typeable;
-import io.github.itzispyder.clickcrystals.gui.elements.interactive.ScrollPanelElement;
+import io.github.itzispyder.clickcrystals.gui.elements.common.Typeable;
+import io.github.itzispyder.clickcrystals.gui.elements.common.interactive.ScrollPanelElement;
+import io.github.itzispyder.clickcrystals.gui.misc.Tex;
 import io.github.itzispyder.clickcrystals.gui.misc.callbacks.*;
 import io.github.itzispyder.clickcrystals.modules.Module;
 import io.github.itzispyder.clickcrystals.modules.modules.clickcrystals.GuiBorders;
 import io.github.itzispyder.clickcrystals.util.minecraft.RenderUtils;
 import io.github.itzispyder.clickcrystals.util.misc.Pair;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -104,6 +107,13 @@ public abstract class GuiScreen extends Screen implements Global {
         }
     }
 
+    public void renderOpaqueBackground(MatrixStack context) {
+        if (mc.player == null || mc.world == null) {
+            RenderSystem.setShaderTexture(0, Tex.Defaults.OPTIONS_BACKGROUND);
+            DrawableHelper.drawTexture(context, 0, 0, 0, 0.0F, 0.0F, this.width, this.height, 32, 32);
+        }
+    }
+
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
         super.mouseMoved(mouseX, mouseY);
@@ -138,6 +148,14 @@ public abstract class GuiScreen extends Screen implements Global {
 
         if (!(selected instanceof Typeable)) {
             this.selected = null;
+        }
+
+        for (int i = children.size() - 1; i >= 0; i--) {
+            GuiElement child = children.get(i);
+            if (child.isMouseOver((int)mouseX, (int)mouseY)) {
+                child.mouseReleased(mouseX, mouseY, button);
+                break;
+            }
         }
 
         for (MouseClickCallback callback : mouseClickListeners) {

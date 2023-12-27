@@ -115,6 +115,11 @@ public abstract class GuiScreen extends Screen implements Global {
     }
 
     @Override
+    public void renderBackground(MatrixStack matrices) {
+
+    }
+
+    @Override
     public void mouseMoved(double mouseX, double mouseY) {
         super.mouseMoved(mouseX, mouseY);
 

@@ -49,7 +49,8 @@ public class HudEditScreen extends GuiScreen {
 
     @Override
     public void baseRender(MatrixStack context, int mouseX, int mouseY, float delta) {
-        renderBackground(context);
+        RenderUtils.fill(context, 0, 0, this.width, this.height, 0x90000000);
+
         RenderUtils.drawHorizontalLine(context, 0, MinecraftClient.getInstance().getWindow().getScaledHeight() / 2, MinecraftClient.getInstance().getWindow().getScaledWidth(), 1, 0xFF8C8C8C);
         RenderUtils.drawHorizontalLine(context, 0, MinecraftClient.getInstance().getWindow().getScaledHeight() - 10, MinecraftClient.getInstance().getWindow().getScaledWidth(), 1, 0xFF8C8C8C);
         RenderUtils.drawHorizontalLine(context, 0, 10, MinecraftClient.getInstance().getWindow().getScaledWidth(), 1, 0xFF8C8C8C);

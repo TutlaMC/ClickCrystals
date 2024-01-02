@@ -112,6 +112,7 @@ public abstract class Module implements Toggleable, Global, SettingContainer {
         return norm + ";" + norm.replaceAll(" ", "").trim();
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends Module> T get(Class<T> moduleClass) {
         return (T)system.modules().get(moduleClass);
     }
@@ -137,5 +138,13 @@ public abstract class Module implements Toggleable, Global, SettingContainer {
         else {
             return action.apply(module);
         }
+    }
+
+    public static void disableAllGameJoinDisabled() {
+        system.collectModules().stream().filter(m -> {
+            return m.getData().isGameJoinDisable();
+        }).forEach(m -> {
+            m.setEnabled(false, true);
+        });
     }
 }

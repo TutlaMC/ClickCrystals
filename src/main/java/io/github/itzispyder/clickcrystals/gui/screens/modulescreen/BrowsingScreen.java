@@ -12,6 +12,7 @@ import io.github.itzispyder.clickcrystals.gui.screens.DefaultBase;
 import io.github.itzispyder.clickcrystals.modules.Categories;
 import io.github.itzispyder.clickcrystals.modules.Category;
 import io.github.itzispyder.clickcrystals.modules.Module;
+import io.github.itzispyder.clickcrystals.util.FileValidationUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.RenderUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
@@ -76,11 +77,12 @@ public class BrowsingScreen extends DefaultBase {
     private static class ScriptDetails extends ModuleElement {
         public ScriptDetails(int x, int y) {
             super(null, x, y);
+            super.setTooltip(null);
         }
 
         @Override
         public void onRender(MatrixStack context, int mouseX, int mouseY) {
-            String text = "§7To manually reload scripts, execute chat command §f%sccs reload-scripts".formatted(ClickCrystals.commandPrefix.getKeyName());
+            String text = "§7To manually reload scripts, execute chat command §f%sreload".formatted(ClickCrystals.commandPrefix.getKeyName());
             RenderUtils.drawText(context, text, x + 10, y + height / 3, 0.7F, false);
         }
 
@@ -92,6 +94,19 @@ public class BrowsingScreen extends DefaultBase {
 
     private static class ScriptCreateNew extends ModuleElement {
         private final SearchBarElement textField = new SearchBarElement(0, 0) {
+            private static final String newModule = """
+                    module create %s
+                    description Custom Scripted Module
+                    
+                    on module_enable {
+                        
+                    }
+                    
+                    on module_disable {
+                        
+                    }
+                    """;
+
             {
                 this.setDefaultText("§7Enter module name");
             }
@@ -103,18 +118,25 @@ public class BrowsingScreen extends DefaultBase {
                     return;
                 }
 
-                if (key == GLFW.GLFW_KEY_ENTER) {
-                    if (getQuery().isEmpty()) {
-                        screen.selected = null;
-                        return;
-                    }
-                    String name = getQuery().trim()
-                            .replace(' ', '-')
-                            .replaceAll("[^a-zA-Z0-9_-]", "")
-                            .toLowerCase();
-                    File file = new File(Config.PATH_SCRIPTS + "/" + name + ".ccs");
-                    mc.setScreen(new ClickScriptIDE(file));
+                if (key != GLFW.GLFW_KEY_ENTER) {
+                    return;
                 }
+                if (getQuery().isEmpty()) {
+                    screen.selected = null;
+                    return;
+                }
+
+                String name = getQuery().trim()
+                        .replace(' ', '-')
+                        .replaceAll("[^a-zA-Z0-9_-]", "")
+                        .toLowerCase();
+
+                File file = new File(Config.PATH_SCRIPTS + "/" + name + ".ccs");
+                if (!file.exists()) {
+                    String preText = newModule.formatted(name);
+                    FileValidationUtils.quickWrite(file, preText);
+                }
+                mc.setScreen(new ClickScriptIDE(file));
             }
         };
 

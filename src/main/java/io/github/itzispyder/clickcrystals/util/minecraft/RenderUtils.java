@@ -1,6 +1,7 @@
 package io.github.itzispyder.clickcrystals.util.minecraft;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.itzispyder.clickcrystals.Global;
 import io.github.itzispyder.clickcrystals.util.MathUtils;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
@@ -12,9 +13,7 @@ import net.minecraft.util.math.RotationAxis;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static io.github.itzispyder.clickcrystals.ClickCrystals.mc;
-
-public final class RenderUtils {
+public final class RenderUtils implements Global {
 
     // default text
 

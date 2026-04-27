@@ -21,6 +21,7 @@ public class ClickCrystalsRenderLayers {
     public static final Function<Identifier, RenderType> TEX_QUADS;
     public static final Function<Identifier, RenderType> TEX_TRI_FAN;
     public static final RenderType TRI_STRIP_CULL;
+    public static final RenderType TRI_FAN_CULL;
     public static final RenderType QUADS_CULL;
     public static final RenderType LINES_CULL;
 
@@ -48,6 +49,7 @@ public class ClickCrystalsRenderLayers {
         TEX_QUADS = id -> RenderType.create("cc_layer_tex_quad", textureParams(ClickCrystalsRenderPipelines.PIPELINE_TEX_QUADS, id));
         TEX_TRI_FAN = id -> RenderType.create("cc_layer_tex_tri_fan", textureParams(ClickCrystalsRenderPipelines.PIPELINE_TEX_TRI_FAN, id));
         TRI_STRIP_CULL = RenderType.create("cc_layer_tri_strip_cull", emptyParams(ClickCrystalsRenderPipelines.PIPELINE_TRI_STRIP_CULL));
+        TRI_FAN_CULL = RenderType.create("cc_layer_tri_fan_cull", emptyParams(ClickCrystalsRenderPipelines.PIPELINE_TRI_FAN_CULL));
         QUADS_CULL = RenderType.create("cc_layer_quads_cull", emptyParams(ClickCrystalsRenderPipelines.PIPELINE_QUADS_CULL));
         LINES_CULL = RenderType.create("cc_layer_lines_cull", emptyParams(ClickCrystalsRenderPipelines.PIPELINE_LINES_CULL));
     }

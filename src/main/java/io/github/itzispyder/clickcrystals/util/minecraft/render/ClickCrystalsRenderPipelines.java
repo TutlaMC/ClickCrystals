@@ -87,6 +87,14 @@ public class ClickCrystalsRenderPipelines {
             .withDepthStencilState(DEPTH_LEQUAL)
             .build();
 
+    public static final RenderPipeline PIPELINE_TRI_FAN_CULL = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+            .withLocation("pipeline/global_fill_pipeline")
+            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_FAN)
+            .withColorTargetState(WITH_BLEND)
+            .withCull(false)
+            .withDepthStencilState(DEPTH_LEQUAL)
+            .build();
+
     public static final RenderPipeline PIPELINE_QUADS_CULL = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
             .withLocation("pipeline/global_fill_pipeline")
             .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)

@@ -288,6 +288,12 @@ public class Conditionals implements Global {
     // @Format (if|if_not) inventory_slot <int> <identifier> {}
     // @Format (while|while_not) inventory_slot <int> <identifier> {}
     public static final Conditional INVENTORY_SLOT;
+    // @Format (if|if_not) rot_x <comparator> <num> {}
+    // @Format (while|while_not) rot_x <comparator> <num> {}
+    public static final Conditional ROT_X;
+    // @Format (if|if_not) rot_y <comparator> <num> {}
+    // @Format (while|while_not) rot_y <comparator> <num> {}
+    public static final Conditional ROT_Y;
 
 
     static {
@@ -340,6 +346,8 @@ public class Conditionals implements Global {
         VEL_X = register("vel_x", ctx -> ctx.end(true, ctx.compareNumArg(0, ctx.entity.getDeltaMovement().x())));
         VEL_Y = register("vel_y", ctx -> ctx.end(true, ctx.compareNumArg(0, ctx.entity.getDeltaMovement().y())));
         VEL_Z = register("vel_z", ctx -> ctx.end(true, ctx.compareNumArg(0, ctx.entity.getDeltaMovement().z())));
+        ROT_X = register("rot_x", ctx -> ctx.end(true, ctx.compareNumArg(0, ctx.entity.getXRot())));
+        ROT_Y = register("rot_y", ctx -> ctx.end(true, ctx.compareNumArg(0, ctx.entity.getYRot())));
         MODULE_ENABLED = register("module_enabled", ctx -> {
             Module m = system.getModuleById(ctx.get(0).toString());
             return ctx.end(m != null && m.isEnabled());

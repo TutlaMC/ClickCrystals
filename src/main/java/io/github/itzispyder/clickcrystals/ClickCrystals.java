@@ -365,6 +365,7 @@ public final class ClickCrystals implements ModInitializer, Global {
         system.addModule(new EntityIndicator());
         system.addModule(new ItemHighlight());
         system.addModule(new TotemChams());
+        system.addModule(new ElytraShadow());
     }
 
     @SuppressWarnings("all")

@@ -157,6 +157,7 @@ public class ColorWheelElement extends GuiElement {
 
     public static class Slider extends GuiElement {
 
+        private final Animator animator = new Animator(500, Animations.FADE_IN_AND_OUT);
         private int colorStart, colorEnd;
         private int fillEnd;
 
@@ -176,7 +177,7 @@ public class ColorWheelElement extends GuiElement {
             }
             // end pre render tasks
 
-            int fillWidth = fillEnd - x;
+            int fillWidth = (int)((fillEnd - x) * animator.getAnimation());
             int colorFillEnd = Color.lerp(colorStart, colorEnd, fillWidth / (float) width);
             int colorFillCenter = Color.lerp(colorStart, colorFillEnd, 0.5F);
 

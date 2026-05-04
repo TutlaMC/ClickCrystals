@@ -230,7 +230,8 @@ public class ScriptsBrowsingScreen extends BrowsingScreen {
         @Override
         public void onClick(double mouseX, double mouseY, int button) {
 //            mc.setScreen(new DownloadScriptScreenOld());
-            mc.setScreen(new DownloadScriptScreen());
+            if (button == 0)
+                mc.setScreen(new DownloadScriptScreen());
         }
     }
 
@@ -252,7 +253,8 @@ public class ScriptsBrowsingScreen extends BrowsingScreen {
 
         @Override
         public void onClick(double mouseX, double mouseY, int button) {
-            system.openUrl("https://bit.ly/ccs-wiki");
+            if (button == 0)
+                system.openUrl("https://bit.ly/ccs-wiki");
         }
     }
 
@@ -398,7 +400,7 @@ public class ScriptsBrowsingScreen extends BrowsingScreen {
 
         @Override
         public void onClick(double mouseX, double mouseY, int button) {
-            if (mc.screen instanceof GuiScreen screen) {
+            if (mc.screen instanceof GuiScreen screen && button == 0) {
                 textField.setDefaultText("§c*Enter module name*");
                 screen.selected = textField;
             }

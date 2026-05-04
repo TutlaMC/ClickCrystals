@@ -23,21 +23,12 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 @Mixin(LevelRenderer.class)
 public abstract class MixinLevelRenderer implements Global {
 
-    @ModifyArgs(method = "renderHitOutline", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/ARGB;colorFromFloat(FFFF)I"))
+    @ModifyArgs(method = "renderHitOutline", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ShapeRenderer;renderShape(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/phys/shapes/VoxelShape;DDDIF)V"))
     public void setOutlineColor(Args args) {
         BlockOutline bo = Module.get(BlockOutline.class);
 
-        if (bo != null && bo.isEnabled()) {
-            float m = 1F / 0xFF;
-            float a = 1.0F;
-            float r = bo.red.getVal().floatValue() * m;
-            float g = bo.green.getVal().floatValue() * m;
-            float b = bo.blue.getVal().floatValue() * m;
-
-            args.set(0, a);
-            args.set(1, r);
-            args.set(2, g);
-            args.set(3, b);
+        if (bo.isEnabled()) {
+            args.set(6, bo.color.getVal().getHexOpaque());
         }
     }
 

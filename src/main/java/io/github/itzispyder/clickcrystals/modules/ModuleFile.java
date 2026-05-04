@@ -32,6 +32,9 @@ public class ModuleFile {
         if (setting instanceof KeybindSetting v) {
             integerEntries.put(id, v.getKey());
         }
+        else if (setting instanceof ColorSetting v) {
+            integerEntries.put(id, v.getVal().getHex());
+        }
         else if (d instanceof Integer v) {
             integerEntries.put(id, v);
         }
@@ -57,6 +60,9 @@ public class ModuleFile {
 
         if (setting instanceof KeybindSetting v) {
             v.setKey(integerEntries.getOrDefault(id, v.getDefKey()));
+        }
+        else if (setting instanceof ColorSetting v) {
+            v.setColor(integerEntries.getOrDefault(id, v.getDef().getHex()));
         }
         else if (setting instanceof IntegerSetting v) {
             v.setVal(integerEntries.getOrDefault(id, v.getDef()));

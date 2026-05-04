@@ -5,10 +5,7 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import io.github.itzispyder.clickcrystals.Global;
 import io.github.itzispyder.clickcrystals.gui.misc.Color;
-import io.github.itzispyder.clickcrystals.util.minecraft.render.states.ClickCrystalsQuadState;
-import io.github.itzispyder.clickcrystals.util.minecraft.render.states.ClickCrystalsRoundRectState;
-import io.github.itzispyder.clickcrystals.util.minecraft.render.states.ClickCrystalsRoundRectTexState;
-import io.github.itzispyder.clickcrystals.util.minecraft.render.states.ClickCrystalsRoundRectWireframeState;
+import io.github.itzispyder.clickcrystals.util.minecraft.render.states.*;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -23,6 +20,14 @@ public final class RenderUtils implements Global {
 
     public static void fillRect(GuiGraphicsExtractor context, int x, int y, int w, int h, int color) {
         context.guiRenderState.addGuiElement(new ClickCrystalsQuadState(context, x, y, w, h, color));
+    }
+
+    public static void fillVeryUselessColorWheel(GuiGraphicsExtractor context, int x, int y, int r) {
+        context.guiRenderState.addGuiElement(new ColorSettingWheelState(context, x, y, r));
+    }
+
+    public static void fillEyeDrop(GuiGraphicsExtractor context, int x, int y, int h, int r, int color) {
+        context.guiRenderState.addGuiElement(new ColorEyeDropState(context, x, y, h, r, color));
     }
 
     public static void fillVerticalGradient(GuiGraphicsExtractor context, int x, int y, int w, int h, int colorTop, int colorBottom) {

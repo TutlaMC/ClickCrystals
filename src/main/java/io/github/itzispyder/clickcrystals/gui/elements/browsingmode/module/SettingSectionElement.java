@@ -19,7 +19,7 @@ public class SettingSectionElement extends GuiElement {
         this.settingSection = settingSection;
         this.animator = new Animator(400, Animations.FADE_IN_AND_OUT);
 
-        int caret = y + 25;
+        int caret = y + 30;
         for (int i = 0; i < settingSection.getSettings().size(); i++) {
             ModuleSetting<?> setting = settingSection.getSettings().get(i);
             SettingElement<?> e = setting.toGuiElement(x + 5, caret);

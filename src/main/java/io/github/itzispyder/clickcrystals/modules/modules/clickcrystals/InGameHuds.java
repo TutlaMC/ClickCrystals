@@ -5,10 +5,14 @@ import io.github.itzispyder.clickcrystals.events.Listener;
 import io.github.itzispyder.clickcrystals.events.events.client.PlayerAttackEntityEvent;
 import io.github.itzispyder.clickcrystals.gui.hud.Hud;
 import io.github.itzispyder.clickcrystals.gui.hud.positionable.TargetPositionableHud;
+import io.github.itzispyder.clickcrystals.gui.misc.Color;
 import io.github.itzispyder.clickcrystals.modules.Categories;
 import io.github.itzispyder.clickcrystals.modules.Module;
 import io.github.itzispyder.clickcrystals.modules.ModuleSetting;
-import io.github.itzispyder.clickcrystals.modules.settings.*;
+import io.github.itzispyder.clickcrystals.modules.settings.BooleanSetting;
+import io.github.itzispyder.clickcrystals.modules.settings.DoubleSetting;
+import io.github.itzispyder.clickcrystals.modules.settings.EnumSetting;
+import io.github.itzispyder.clickcrystals.modules.settings.SettingSection;
 import net.minecraft.world.entity.player.Player;
 
 public class InGameHuds extends Module implements Listener {
@@ -18,36 +22,10 @@ public class InGameHuds extends Module implements Listener {
     private final SettingSection scHudPosition = createSettingSection("position-hud-settings");
     private final SettingSection scHudTarget = createSettingSection("target-hud-settings");
     private final SettingSection scHudClock = createSettingSection("clock-hud-settings");
-    public final ModuleSetting<Integer> colorRed = scGeneral.add(IntegerSetting.create()
-            .max(255)
-            .min(0)
-            .name("color-red")
-            .description("Hud backdrop color value (red)")
-            .def(Hud.DEFAULT_COLOR.getRed())
-            .build()
-    );
-    public final ModuleSetting<Integer> colorGreen = scGeneral.add(IntegerSetting.create()
-            .max(255)
-            .min(0)
-            .name("color-green")
-            .description("Hud backdrop color value (green)")
-            .def(Hud.DEFAULT_COLOR.getGreen())
-            .build()
-    );
-    public final ModuleSetting<Integer> colorBlue = scGeneral.add(IntegerSetting.create()
-            .max(255)
-            .min(0)
-            .name("color-blue")
-            .description("Hud backdrop color value (blue)")
-            .def(Hud.DEFAULT_COLOR.getBlue())
-            .build()
-    );
-    public final ModuleSetting<Integer> colorAlpha = scGeneral.add(IntegerSetting.create()
-            .max(255)
-            .min(0)
-            .name("color-alpha")
-            .description("Hud backdrop color value (alpha or transparency)")
-            .def(Hud.DEFAULT_COLOR.getAlpha())
+    public final ModuleSetting<Color> color = scGeneral.add(createColorSetting()
+            .name("color")
+            .description("Color of the huds")
+            .def(Hud.DEFAULT_COLOR)
             .build()
     );
     public final ModuleSetting<Boolean> hudArmor = scHudVisibility.add(BooleanSetting.create()
@@ -55,7 +33,7 @@ public class InGameHuds extends Module implements Listener {
             .description("Renders the armor hud.")
             .def(true)
             .build()
-            );
+    );
     public final ModuleSetting<Boolean> hudIcon = scHudVisibility.add(BooleanSetting.create()
             .name("render-icon-hud")
             .description("Renders the icon hud.")
@@ -179,11 +157,7 @@ public class InGameHuds extends Module implements Listener {
     }
 
     public int getArgb() {
-        int a = colorAlpha.getVal();
-        int r = colorRed.getVal();
-        int g = colorGreen.getVal();
-        int b = colorBlue.getVal();
-        return a << 24 | r << 16 | g << 8 | b;
+        return color.getVal().getHex();
     }
 
     public enum ClockDisplay {

@@ -20,10 +20,13 @@ public class ColorWheelElement extends GuiElement {
     public ColorWheelElement(int x, int y, int r) {
         super(x, y, 2 * r, 2 * r);
         this.sliderBrightness = new Slider(x + width + 5, y + 10, width + 20, 5, 0xFF000000, 0xFFFFFFFF);
-        this.sliderAlpha      = new Slider(x + width + 5, y + 25, width + 20, 5, 0x00FFFFFF, 0xFFFFFFFF);
+        this.sliderAlpha      = new Slider(x + width + 5, y + 30, width + 20, 5, 0x00FFFFFF, 0xFFFFFFFF);
         this.addChild(this.sliderBrightness);
         this.addChild(this.sliderAlpha);
-        this.hoverAnimator = new PollingAnimator(200, () -> mc.screen instanceof GuiScreen screen && screen.selected == this, Animations.ELASTIC_BOUNCE);
+        this.hoverAnimator = new PollingAnimator(200, () -> {
+            return mc.screen instanceof GuiScreen screen
+                    && (screen.selected == this || screen.selected == sliderBrightness || screen.selected == sliderAlpha);
+        }, Animations.ELASTIC_BOUNCE);
     }
 
     @Override
@@ -45,17 +48,28 @@ public class ColorWheelElement extends GuiElement {
         RenderUtils.fillVeryUselessColorWheel(context, x, y, width / 2);
 
         // eye drop preview
-        double anim = hoverAnimator.getAnimation();
-        int eyedropHeight = (int) (45 * anim);
-        int eyedropRadius = (int) (15 * anim);
-        RenderUtils.fillEyeDrop(context, curX + cx, curY + cy, eyedropHeight, eyedropRadius, 0x80000000);
-        RenderUtils.fillCircle(context, curX + cx, curY + cy - eyedropHeight + eyedropRadius, (int) (12 * anim), currentArgb);
+        this.renderEyeDropper(context, cx, cy, currentArgb);
 
         RenderUtils.fillCircle(context, curX + cx, curY + cy, 4, 0xFF000000);
         RenderUtils.fillCircle(context, curX + cx, curY + cy, 3, 0xFFFFFFFF);
 
         RenderUtils.drawText(context, "Brightness",   x + width + 5, y + 4, 0.6F, false);
-        RenderUtils.drawText(context, "Transparency", x + width + 5, y + 19, 0.6F, false);
+        RenderUtils.drawText(context, "Transparency", x + width + 5, y + 24, 0.6F, false);
+    }
+
+    public void renderEyeDropper(GuiGraphicsExtractor context, int cx, int cy, int previewColor) {
+        double anim = hoverAnimator.getAnimation();
+        int eyedropHeight = (int) (45 * anim);
+        int eyedropRadius = (int) (15 * anim);
+        if (curY < 0) {
+            context.pose().pushMatrix();
+            context.pose().scaleAround(1, -1, curX + cx, curY + cy);
+        }
+        RenderUtils.fillEyeDrop(context, curX + cx, curY + cy, eyedropHeight, eyedropRadius, 0x80000000);
+        RenderUtils.fillCircle(context, curX + cx, curY + cy - eyedropHeight + eyedropRadius, (int) (12 * anim), previewColor);
+        if (curY < 0) {
+            context.pose().popMatrix();
+        }
     }
 
     public int getArgb() {

@@ -4527,6 +4527,182 @@
     {
       "components": [
         {
+          "acceptingRegex": "(if|if_not)",
+          "optional": false,
+          "leading": true
+        },
+        {
+          "acceptingRegex": "(rot_x)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "([\u003c\u003e\u003d!]\u003d)|[\u003c\u003e\u003d]",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "(-?\\d*(\\.\\d*)?)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "",
+          "optional": false,
+          "leading": false
+        }
+      ],
+      "optional": false,
+      "acceptingCodeBlocks": true
+    },
+    {
+      "components": [
+        {
+          "acceptingRegex": "(while|while_not)",
+          "optional": false,
+          "leading": true
+        },
+        {
+          "acceptingRegex": "(rot_x)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "([\u003c\u003e\u003d!]\u003d)|[\u003c\u003e\u003d]",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "(-?\\d*(\\.\\d*)?)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "",
+          "optional": false,
+          "leading": false
+        }
+      ],
+      "optional": false,
+      "acceptingCodeBlocks": true
+    },
+    {
+      "components": [
+        {
+          "acceptingRegex": "(if|if_not)",
+          "optional": false,
+          "leading": true
+        },
+        {
+          "acceptingRegex": "(rot_y)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "([\u003c\u003e\u003d!]\u003d)|[\u003c\u003e\u003d]",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "(-?\\d*(\\.\\d*)?)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "",
+          "optional": false,
+          "leading": false
+        }
+      ],
+      "optional": false,
+      "acceptingCodeBlocks": true
+    },
+    {
+      "components": [
+        {
+          "acceptingRegex": "(while|while_not)",
+          "optional": false,
+          "leading": true
+        },
+        {
+          "acceptingRegex": "(rot_y)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "([\u003c\u003e\u003d!]\u003d)|[\u003c\u003e\u003d]",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "(-?\\d*(\\.\\d*)?)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "",
+          "optional": false,
+          "leading": false
+        }
+      ],
+      "optional": false,
+      "acceptingCodeBlocks": true
+    },
+    {
+      "components": [
+        {
+          "acceptingRegex": "(if|if_not)",
+          "optional": false,
+          "leading": true
+        },
+        {
+          "acceptingRegex": "(facing)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "(north|south|east|west|up|down)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "",
+          "optional": false,
+          "leading": false
+        }
+      ],
+      "optional": false,
+      "acceptingCodeBlocks": true
+    },
+    {
+      "components": [
+        {
+          "acceptingRegex": "(while|while_not)",
+          "optional": false,
+          "leading": true
+        },
+        {
+          "acceptingRegex": "(facing)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "(north|south|east|west|up|down)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "",
+          "optional": false,
+          "leading": false
+        }
+      ],
+      "optional": false,
+      "acceptingCodeBlocks": true
+    },
+    {
+      "components": [
+        {
           "acceptingRegex": "(config)",
           "optional": false,
           "leading": true

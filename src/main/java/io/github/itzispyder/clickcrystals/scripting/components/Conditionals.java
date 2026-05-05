@@ -8,6 +8,7 @@ import io.github.itzispyder.clickcrystals.scripting.ScriptParser;
 import io.github.itzispyder.clickcrystals.scripting.components.conditionalcontexts.*;
 import io.github.itzispyder.clickcrystals.util.minecraft.*;
 import io.github.itzispyder.clickcrystals.util.misc.Voidable;
+import net.minecraft.core.Direction;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -294,6 +295,9 @@ public class Conditionals implements Global {
     // @Format (if|if_not) rot_y <comparator> <num> {}
     // @Format (while|while_not) rot_y <comparator> <num> {}
     public static final Conditional ROT_Y;
+    // @Format (if|if_not) facing (north|south|east|west|up|down) {}
+    // @Format (while|while_not) facing (north|south|east|west|up|down) {}
+    public static final Conditional FACING;
 
 
     static {
@@ -428,5 +432,6 @@ public class Conditionals implements Global {
         GLIDING = register("gliding", ctx -> ctx.end(true, ctx.entity instanceof Player player && player.isFallFlying()));
         INVISIBLE = register("invisible", ctx -> ctx.end(true, ctx.entity.isInvisible()));
         INVENTORY_SLOT = register("inventory_slot", new ConditionalInventorySlot());
+        FACING = register("facing", ctx -> ctx.end(true, ctx.entity.getNearestViewDirection() == ctx.get(0).toEnum(Direction.class)));
     }
 }

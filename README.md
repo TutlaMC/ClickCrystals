@@ -30,26 +30,25 @@ Happy coding and cpvping!
 
 ## What Version Should I Get?
 
-| What You Have | What to get                                                                                                                    |
-|:--------------|:-------------------------------------------------------------------------------------------------------------------------------|
-| higher..      | how is that even possible?                                                                                                     |
-| 26.1.2        | [ClickCrystals-26.1-1.3.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.9) *recommended    |
-| 26.1.1        | [ClickCrystals-26.1-1.3.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.9) *recommended    |
-| 26.1          | [ClickCrystals-26.1-1.3.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.9) *recommended    |
-| 1.21.11       | [ClickCrystals-1.21.11-1.3.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.9) *recommended |
-| 1.21.10       | [ClickCrystals-1.21.9-1.3.7.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.7)               |
-| 1.21.9        | [ClickCrystals-1.21.9-1.3.7.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.7)               |
-| 1.21.8        | [ClickCrystals-1.21.6-1.3.7.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.7)               |
-| 1.21.7        | [ClickCrystals-1.21.6-1.3.7.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.7)               |
-| 1.21.6        | [ClickCrystals-1.21.6-1.3.7.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.7)               |
-| 1.21.5        | [ClickCrystals-1.21.5-1.3.2.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.2)               |
-| 1.21.4        | not supported                                                                                                                  |
-| 1.21.3        | not supported                                                                                                                  |
-| 1.21.2        | not supported                                                                                                                  |
-| 1.21.1        | [ClickCrystals-1.21-1.2.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.2.9)                 |
-| 1.21          | [ClickCrystals-1.21-1.2.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.2.9)                 |
-| ..lower       | cry                                                                                                                            |                                                                                                                    |                                                                                                                  |
-
+| What You Have | What to get                                                                                                                 |
+|:--------------|:----------------------------------------------------------------------------------------------------------------------------|
+| higher..      | how is that even possible?                                                                                                  |
+| 26.1.2        | [ClickCrystals-26.1-1.4.0.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.4.0) *recommended |
+| 26.1.1        | [ClickCrystals-26.1-1.4.0.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.4.0) *recommended |
+| 26.1          | [ClickCrystals-26.1-1.4.0.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.4.0) *recommended |
+| 1.21.11       | [ClickCrystals-1.21.11-1.3.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.9)           |
+| 1.21.10       | [ClickCrystals-1.21.9-1.3.7.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.7)            |
+| 1.21.9        | [ClickCrystals-1.21.9-1.3.7.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.7)            |
+| 1.21.8        | [ClickCrystals-1.21.6-1.3.7.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.7)            |
+| 1.21.7        | [ClickCrystals-1.21.6-1.3.7.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.7)            |
+| 1.21.6        | [ClickCrystals-1.21.6-1.3.7.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.7)            |
+| 1.21.5        | [ClickCrystals-1.21.5-1.3.2.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.2)            |
+| 1.21.4        | not supported                                                                                                               |
+| 1.21.3        | not supported                                                                                                               |
+| 1.21.2        | not supported                                                                                                               |
+| 1.21.1        | [ClickCrystals-1.21-1.2.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.2.9)              |
+| 1.21          | [ClickCrystals-1.21-1.2.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.2.9)              |
+| ..lower       | cry                                                                                                                         |
 
 
 ### Can't Find The Version You're Looking For?
@@ -59,19 +58,37 @@ Take a look in latest releases for [experimental versions](https://github.com/it
 
 ## Newest Changes
 ```yml
-Version: 1.3.9
+Version: 1.4.0
 
 Scripting:
-  - added support for checking potion type (same way you'd check enchantments) #potion[regen],#potion[fall]
+- fix cancel_packet not working
+- fix uncancel_packet not working
+- fix on packet_send not working
+- fix on packet_receive not working
+- fix on place_block running twice
+- fix on break_block running twice
+- notify not working
+- if rot_x <comparator> <num> # pitch
+- if rot_y <comparator> <num> # yaw
+- if facing <direction>
+- if input_active container
+- if input_active inventory # now strictly only works for inventories
 
 Patches:
-  - optimized rendering by using sine table for trig functions
-  - entity glow and spectral arrows being ineffective
-  - text miscolor for modrinth warnings
-  - improved accuracy for entity_in_fov and block_in_fov
+- PacketMapper ID not working in scripts
+- new entity textures not showing up
+- script notify command
+- Zoom module not working
+- custom splash text color
+- GuiCursor not working on Wayland
+- fix NoOverlay fire overlay doesnt get removed
+- add color setting instead of RGB
 
-Modules:
-  - made StumSlam attack differently
+Codebase:
+- renamed mixin classes to fit mojmap conventions
+
+Module:
+- add ElytraShadow
 ```
 
 ![demo](https://cdn.modrinth.com/data/YDYPZdGj/images/d4ad4320aaf5d8589829e3d1691ec5755422a778.png)
@@ -103,6 +120,7 @@ Modules:
 |     SwordSwap      |                        Switch to sword after hitting a shielding opponent with an axe                         |
 |      TntSwap       |                                       Swaps to tnt after placing rails                                        |
 |   AutoDisconnect   |                         Disconnect you from the world when a certain condition is met                         |
+|    ChestSorter     |                                Sorts chests that you open with this module on.                                |
 |   EntityStatuses   |                               DEBUG: Sends received EntityStatusPackets in chat                               |
 |     GuiBorders     |                         DEBUG: Renders borders around all ClickCrystals GUI elements                          |
 |     InGameHuds     |                               Manager of all custom ClickCrystals in-game huds                                |
@@ -149,6 +167,7 @@ Modules:
 |    TimeChanger     |                                           Changes client world time                                           |
 |    BlockOutline    |                                     Change the color of the block outline                                     |
 |    CrystalSpeed    |                                          Crystals per second counter                                          |
+|    ElytraShadow    |                        Renders a shadow directly below a gliding player on the ground.                        |
 |  EntityIndicator   |                              Indicates entities around you. Players are excluded                              |
 |     GhostTotem     |               Renders a totem in your hand upon dying. Will not work if AutoRespawn is enabled!               |
 |  GlowingEntities   |                                  Having trouble seeing entities in the dark?                                  |

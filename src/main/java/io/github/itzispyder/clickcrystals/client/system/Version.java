@@ -88,10 +88,12 @@ public class Version implements Global {
         boolean comp(int us, int them);
     }
 
-    public static String fetchModVersion() {
+    public static Version fetchModVersion() {
         ModContainer mod = FabricLoader.getInstance().getModContainer(modId)
                 .orElseThrow(() -> new IllegalArgumentException("ClickCrystals has not been loaded"));
-        String ver = mod.getMetadata().getVersion().getFriendlyString();
-        return ver.replaceFirst("((\\d\\.?)+-)+", "");
+        String str = mod.getMetadata().getVersion()
+                .getFriendlyString()
+                .replaceFirst("((\\d\\.?)+-)+", "");
+        return Version.ofString(str);
     }
 }

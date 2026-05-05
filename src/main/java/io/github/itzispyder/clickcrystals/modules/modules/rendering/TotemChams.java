@@ -6,6 +6,7 @@ import io.github.itzispyder.clickcrystals.events.events.client.EntityDamageEvent
 import io.github.itzispyder.clickcrystals.events.events.networking.PacketReceiveEvent;
 import io.github.itzispyder.clickcrystals.events.events.world.ClientTickEndEvent;
 import io.github.itzispyder.clickcrystals.events.events.world.RenderWorldEvent;
+import io.github.itzispyder.clickcrystals.gui.misc.Color;
 import io.github.itzispyder.clickcrystals.modules.Categories;
 import io.github.itzispyder.clickcrystals.modules.Module;
 import io.github.itzispyder.clickcrystals.modules.ModuleSetting;
@@ -67,29 +68,10 @@ public class TotemChams extends ListenerModule {
             .def(5.0)
             .build()
     );
-    private final SettingSection scColor = createSettingSection("color");
-    public final ModuleSetting<Integer> red = scColor.add(createIntSetting()
-            .name("red")
-            .description("Color value RED")
-            .max(255)
-            .min(0)
-            .def(255)
-            .build()
-    );
-    public final ModuleSetting<Integer> green = scColor.add(createIntSetting()
-            .name("green")
-            .description("Color value GREEN")
-            .max(255)
-            .min(0)
-            .def(125)
-            .build()
-    );
-    public final ModuleSetting<Integer> blue = scColor.add(createIntSetting()
-            .name("blue")
-            .description("Color value BLUE")
-            .max(255)
-            .min(0)
-            .def(125)
+    public final ModuleSetting<Color> color = scGeneral.add(createColorSetting()
+            .name("color")
+            .description("Color of the totem chams")
+            .def(0xFFFF7D7D)
             .build()
     );
     private final SettingSection scExtra = createSettingSection("extra");
@@ -174,7 +156,7 @@ public class TotemChams extends ListenerModule {
     }
 
     public int getColor() {
-        return 0x40 << 24 | red.getVal() << 16 | green.getVal() << 8 | blue.getVal();
+        return color.getVal().getHexCustomAlpha(0x40);
     }
 
     public enum RagDoll {

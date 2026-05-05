@@ -7,6 +7,7 @@ Keyword: input
 ```
 input attack
 input backward
+input container
 input forward
 input inventory
 input jump
@@ -27,7 +28,7 @@ input use
 
 ### Regex
 ```regexp
-(((input)( (attack|use|forward|backward|strafe_left|strafe_right|jump|sprint|sneak|lock_cursor|unlock_cursor|left|right|middle|inventory|mouse_wheel_up|mouse_wheel_down)))|((input)( (key))( (\S+))))
+(((input)( (attack|use|forward|backward|strafe_left|strafe_right|jump|sprint|sneak|lock_cursor|unlock_cursor|left|right|middle|container|inventory|mouse_wheel_up|mouse_wheel_down)))|((input)( (key))( (\S+))))
 ```
 
 ### Raw Documentation

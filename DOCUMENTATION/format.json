@@ -858,7 +858,7 @@
           "leading": false
         },
         {
-          "acceptingRegex": "(attack|use|forward|backward|strafe_left|strafe_right|jump|sprint|sneak|lock_cursor|unlock_cursor|left|right|middle|inventory|mouse_wheel_up|mouse_wheel_down)",
+          "acceptingRegex": "(attack|use|forward|backward|strafe_left|strafe_right|jump|sprint|sneak|lock_cursor|unlock_cursor|left|right|middle|container|inventory|mouse_wheel_up|mouse_wheel_down)",
           "optional": false,
           "leading": false
         },
@@ -920,7 +920,7 @@
           "leading": false
         },
         {
-          "acceptingRegex": "(attack|use|forward|backward|strafe_left|strafe_right|jump|sprint|sneak|lock_cursor|unlock_cursor|left|right|middle|inventory|mouse_wheel_up|mouse_wheel_down)",
+          "acceptingRegex": "(attack|use|forward|backward|strafe_left|strafe_right|jump|sprint|sneak|lock_cursor|unlock_cursor|left|right|middle|container|inventory|mouse_wheel_up|mouse_wheel_down)",
           "optional": false,
           "leading": false
         },
@@ -6999,7 +6999,7 @@
           "leading": true
         },
         {
-          "acceptingRegex": "(attack|use|forward|backward|strafe_left|strafe_right|jump|sprint|sneak|lock_cursor|unlock_cursor|left|right|middle|inventory|mouse_wheel_up|mouse_wheel_down)",
+          "acceptingRegex": "(attack|use|forward|backward|strafe_left|strafe_right|jump|sprint|sneak|lock_cursor|unlock_cursor|left|right|middle|container|inventory|mouse_wheel_up|mouse_wheel_down)",
           "optional": false,
           "leading": false
         },
@@ -7062,7 +7062,7 @@
           "leading": true
         },
         {
-          "acceptingRegex": "(attack|use|forward|backward|strafe_left|strafe_right|jump|sprint|sneak|lock_cursor|unlock_cursor|left|right|middle|inventory|mouse_wheel_up|mouse_wheel_down)",
+          "acceptingRegex": "(attack|use|forward|backward|strafe_left|strafe_right|jump|sprint|sneak|lock_cursor|unlock_cursor|left|right|middle|container|inventory|mouse_wheel_up|mouse_wheel_down)",
           "optional": false,
           "leading": false
         }

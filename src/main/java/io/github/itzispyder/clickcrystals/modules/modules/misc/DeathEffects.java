@@ -3,6 +3,7 @@ package io.github.itzispyder.clickcrystals.modules.modules.misc;
 import io.github.itzispyder.clickcrystals.events.EventHandler;
 import io.github.itzispyder.clickcrystals.events.events.networking.PacketReceiveEvent;
 import io.github.itzispyder.clickcrystals.events.events.world.ClientTickEndEvent;
+import io.github.itzispyder.clickcrystals.gui.misc.Color;
 import io.github.itzispyder.clickcrystals.modules.Categories;
 import io.github.itzispyder.clickcrystals.modules.ModuleSetting;
 import io.github.itzispyder.clickcrystals.modules.modules.ListenerModule;
@@ -54,31 +55,10 @@ public class DeathEffects extends ListenerModule {
             .min(0)
             .build()
     );
-    public final ModuleSetting<Double> red = rocketColors.add(createDoubleSetting()
-            .name("Red")
-            .description("Decide how much red will be on the color pattern.")
-            .def(255.0)
-            .max(255.0)
-            .min(0.0)
-            .decimalPlaces(1)
-            .build()
-    );
-    public final ModuleSetting<Double> green = rocketColors.add(createDoubleSetting()
-            .name("Green")
-            .description("Decide how much green will be on the color pattern.")
-            .def(255.0)
-            .max(255.0)
-            .min(0.0)
-            .decimalPlaces(1)
-            .build()
-    );
-    public final ModuleSetting<Double> blue = rocketColors.add(createDoubleSetting()
-            .name("Blue")
-            .description("Decide how much blue will be on the color pattern.")
-            .def(255.0)
-            .max(255.0)
-            .min(0.0)
-            .decimalPlaces(1)
+    public final ModuleSetting<Color> color = rocketColors.add(createColorSetting()
+            .name("color")
+            .description("Color of the rockets")
+            .def(Color.WHITE)
             .build()
     );
 
@@ -108,29 +88,14 @@ public class DeathEffects extends ListenerModule {
         else spawnLightning(entity);
     }
 
-    public int rocketColor() {
-        int redValue = red.getVal().intValue();
-        int greenValue = green.getVal().intValue();
-        int blueValue = blue.getVal().intValue();
-        return (redValue << 16) | (greenValue << 8) | blueValue;
-    }
-    private int fadeColor(int baseColor) {
-        int red = (baseColor >> 16) & 0xFF;
-        int green = (baseColor >> 8) & 0xFF;
-        int blue = baseColor & 0xFF;
-        red = Math.min(255, red + 30);
-        green = Math.min(255, green + 30);
-        blue = Math.min(255, blue + 30);
-        return (red << 16) | (green << 8) | blue;
-    }
-
     private void spawnFirework(Entity ent){
         IntList colors = new IntArrayList();
-        colors.add(rocketColor());
         IntList fadeColors = new IntArrayList();
-        fadeColors.add(fadeColor(rocketColor()));
-        FireworkExplosion fireworkExplosion = new FireworkExplosion(shape.getVal(),colors,fadeColors,true,true);
-        mc.level.createFireworks(ent.getX(),ent.getY(),ent.getZ(),0,vRocket.getVal(),0, Collections.singletonList(fireworkExplosion));
+        colors.add(color.getVal().getHexOpaque());
+        fadeColors.add(color.getVal().brighter(2).getHexOpaque());
+
+        FireworkExplosion fireworkExplosion = new FireworkExplosion(shape.getVal(), colors, fadeColors,true,true);
+        mc.level.createFireworks(ent.getX(), ent.getY(), ent.getZ(), 0, vRocket.getVal(), 0, Collections.singletonList(fireworkExplosion));
     }
 
     private void spawnLightning(Entity ent) {

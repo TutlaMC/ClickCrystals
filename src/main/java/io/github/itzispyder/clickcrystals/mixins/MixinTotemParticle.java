@@ -1,5 +1,6 @@
 package io.github.itzispyder.clickcrystals.mixins;
 
+import io.github.itzispyder.clickcrystals.gui.misc.Color;
 import io.github.itzispyder.clickcrystals.modules.Module;
 import io.github.itzispyder.clickcrystals.modules.modules.rendering.TotemPopColor;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -25,11 +26,8 @@ public abstract class MixinTotemParticle extends SingleQuadParticle {
         if (!t.isEnabled())
             return;
 
-        setColor(
-                t.red.getVal().floatValue() / 0xFF,
-                t.green.getVal().floatValue() / 0xFF,
-                t.blue.getVal().floatValue() / 0xFF
-        );
-        setAlpha(t.alpha.getVal().floatValue() / 0xFF);
+        Color c = t.color.getVal();
+        setColor(c.getRedF(), c.getGreenF(), c.getBlueF());
+        setAlpha(c.getAlphaF());
     }
 }

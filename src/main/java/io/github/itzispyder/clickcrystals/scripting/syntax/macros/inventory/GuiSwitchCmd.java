@@ -18,7 +18,7 @@ public class GuiSwitchCmd extends ScriptCommand {
 
     @Override
     public void onCommand(ScriptCommand command, String line, ScriptArgs args) {
-        if (InputType.INVENTORY.isActive()) {
+        if (InputType.CONTAINER.isActive()) {
             Predicate<ItemStack> item = ScriptParser.parseItemPredicate(args.get(0).toString());
             InteractionUtils.searchGuiItem(item);
         }

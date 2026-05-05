@@ -8,6 +8,7 @@ Keyword: hold_input
 hold_input attack <num>
 hold_input backward <num>
 hold_input cancel
+hold_input container <num>
 hold_input forward <num>
 hold_input inventory <num>
 hold_input jump <num>
@@ -28,7 +29,7 @@ hold_input use <num>
 
 ### Regex
 ```regexp
-(((hold_input)( (attack|use|forward|backward|strafe_left|strafe_right|jump|sprint|sneak|lock_cursor|unlock_cursor|left|right|middle|inventory|mouse_wheel_up|mouse_wheel_down))( (-?\d*(\.\d*)?)))|((hold_input)( (key))( (\S+))( (-?\d*(\.\d*)?)))|((hold_input)( (cancel))))
+(((hold_input)( (attack|use|forward|backward|strafe_left|strafe_right|jump|sprint|sneak|lock_cursor|unlock_cursor|left|right|middle|container|inventory|mouse_wheel_up|mouse_wheel_down))( (-?\d*(\.\d*)?)))|((hold_input)( (key))( (\S+))( (-?\d*(\.\d*)?)))|((hold_input)( (cancel))))
 ```
 
 ### Raw Documentation

@@ -19,20 +19,19 @@ public abstract class MixinEntity {
     @Inject(method = "isInvisibleTo", at = @At("HEAD"), cancellable = true)
     private void overrideIsInvisibleToPlayer(Player player, CallbackInfoReturnable<Boolean> cir) {
         SpectatorSight ss = Module.get(SpectatorSight.class);
+        Entity entity = (Entity)(Object)this;
 
-        if (ss.isEnabled() && ss.canRender((Entity) (Object) this)) {
+        if (ss.isEnabled() && ss.canRender(entity))
             cir.setReturnValue(false);
-        }
     }
 
     @ModifyReturnValue(method = "getTeamColor", at = @At("RETURN"))
     private int modifyGetTeamColorValue(int original) {
-
         SelfGlow self = Module.get(SelfGlow.class);
+        Entity entity = (Entity)(Object)this;
 
-        if (self == null || !self.isEnabled() || ((Object) this) != mc.player)
+        if (!self.isEnabled() || entity != mc.player)
             return original;
-
-        return self.glowColor.getVal().getRGBA();
+        return self.glowColor.getVal().getHexOpaque();
     }
 }

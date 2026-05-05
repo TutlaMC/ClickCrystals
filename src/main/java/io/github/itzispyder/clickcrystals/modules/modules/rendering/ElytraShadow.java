@@ -7,8 +7,8 @@ import io.github.itzispyder.clickcrystals.events.EventHandler;
 import io.github.itzispyder.clickcrystals.events.events.world.RenderWorldEvent;
 import io.github.itzispyder.clickcrystals.gui.misc.Color;
 import io.github.itzispyder.clickcrystals.modules.Categories;
+import io.github.itzispyder.clickcrystals.modules.ModuleSetting;
 import io.github.itzispyder.clickcrystals.modules.modules.ListenerModule;
-import io.github.itzispyder.clickcrystals.modules.settings.IntegerSetting;
 import io.github.itzispyder.clickcrystals.modules.settings.SettingSection;
 import io.github.itzispyder.clickcrystals.util.MathUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.PlayerUtils;
@@ -25,28 +25,11 @@ import org.joml.Matrix4f;
 public class ElytraShadow extends ListenerModule {
 
     private final SettingSection scGeneral = getGeneralSection();
-    public final IntegerSetting colorRed = scGeneral.add(createIntSetting()
-            .name("color-red")
-            .description("Red color value of shadow")
-            .def(0x00)
-            .max(0xFF)
-            .min(0x00)
+    public final ModuleSetting<Color> color = scGeneral.add(createColorSetting()
+            .name("shadow-color")
+            .description("Color of the shadow")
+            .def(0xFF00B7FF)
             .build());
-    public final IntegerSetting colorGreen = scGeneral.add(createIntSetting()
-            .name("color-green")
-            .description("Green color value of shadow")
-            .def(0xB7)
-            .max(0xFF)
-            .min(0x00)
-            .build());
-    public final IntegerSetting colorBlue = scGeneral.add(createIntSetting()
-            .name("color-blue")
-            .description("Blue color value of shadow")
-            .def(0xFF)
-            .max(0xFF)
-            .min(0x00)
-            .build());
-
 
     public ElytraShadow() {
         super("elytra-shadow", Categories.RENDER, "Renders a shadow directly below a gliding player on the ground.");
@@ -54,7 +37,7 @@ public class ElytraShadow extends ListenerModule {
 
     @EventHandler
     public void onWorldRender(RenderWorldEvent e) {
-        Color color = new Color(0, colorRed.getVal(), colorGreen.getVal(), colorBlue.getVal());
+        Color color = this.color.getVal();
         for (AbstractClientPlayer player : PlayerUtils.getClientWorld().players())
             if (player.isFallFlying())
                 renderPlayerShadow(e, player, color);

@@ -36,9 +36,9 @@ public class TextFieldElement extends GuiElement implements Typeable {
     private boolean selectionBlinking, selectedAll;
     private int selectionBlink;
 
-    private final Deque<TextFieldChange> history = new ArrayDeque<>();
-    private long lastEditTime = 0;
-    private final long historyInterval = 600;
+    private final List<String> history = new ArrayList<>();
+    private int historyIndex = -1;
+
 
     public TextFieldElement(String preText, int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -58,6 +58,7 @@ public class TextFieldElement extends GuiElement implements Typeable {
         if (Character.isISOControl(chr)) {
             return;
         }
+        pushHistory();
         onInput(input -> insertInput(String.valueOf(chr)));
         shiftRight();
     }
@@ -136,7 +137,7 @@ public class TextFieldElement extends GuiElement implements Typeable {
             return true;
         }
         else if (key == GLFW.GLFW_KEY_BACKSPACE) {
-            pushHistory(TextFieldChangeType.REMOVE);
+            pushHistory();
             onInput(currentContent -> selectionStart > 0 && !currentContent.isEmpty()
                     ? currentContent.substring(0, selectionStart - 1) + currentContent.substring(selectionStart)
                     : currentContent);
@@ -144,11 +145,12 @@ public class TextFieldElement extends GuiElement implements Typeable {
             return true;
         }
         else if (key == GLFW.GLFW_KEY_DELETE) {
-            pushHistory(TextFieldChangeType.REMOVE);
+            pushHistory();
             onInput(input -> StringUtils.insertString(content, selectionStart + 1, null));
             return true;
         }
         else if (key == GLFW.GLFW_KEY_V && screen.ctrlKeyPressed) {
+            pushHistory();
             String content = mc.keyboardHandler.getClipboard();
             onInput(input -> insertInput(content));
             for (int i = 0; i <= content.length()-1; i++){
@@ -161,6 +163,7 @@ public class TextFieldElement extends GuiElement implements Typeable {
             return true;
         }
         else if (key == GLFW.GLFW_KEY_ENTER) {
+            pushHistory();
             onInput(input -> insertInput("\n"));
             shiftRight();
             shiftRight();
@@ -183,20 +186,42 @@ public class TextFieldElement extends GuiElement implements Typeable {
             for (int i = 0; i < 10; i++)
                 shiftRight();
             return true;
+        } else if (key == GLFW.GLFW_KEY_Z && screen.ctrlKeyPressed) {
+            undo();
+            return true;
+        }
+        else if (key == GLFW.GLFW_KEY_Y && screen.ctrlKeyPressed) {
+            redo();
+            return true;
         }
         return false;
     }
 
-    private void pushHistory(TextFieldChangeType type) {
-        long now = System.currentTimeMillis();
-        boolean expired = now - lastEditTime > historyInterval;
-        boolean typeChanged = !history.isEmpty() && history.peekLast().type() != type;
+    private void undo() {
+        if (historyIndex < 0) return;
+        historyIndex--;
+        content = historyIndex >= 0 ? history.get(historyIndex) : "";
+        styledContent = style(content);
+        updateSelection();
+    }
 
-        if (expired || typeChanged) {
-            history.add(new TextFieldChange(type, content, selectionStart));
+    private void redo() {
+        if (historyIndex >= history.size() - 1) return;
+        historyIndex++;
+        content = history.get(historyIndex);
+        styledContent = style(content);
+        updateSelection();
+    }
+
+    private void pushHistory() {
+        history.subList(historyIndex + 1, history.size()).clear();
+        history.add(content);
+        if (history.size() > 667) { // so it doesnt eat memory (unless your script has like 100k lines dw)
+            history.remove(0);
+            historyIndex = history.size() - 1;
+        } else {
+            historyIndex = history.size() - 1;
         }
-
-        lastEditTime = now;
     }
 
     @Override

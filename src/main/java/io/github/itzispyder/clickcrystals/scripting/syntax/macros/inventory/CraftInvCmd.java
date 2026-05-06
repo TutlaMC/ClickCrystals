@@ -7,7 +7,7 @@ import io.github.itzispyder.clickcrystals.util.minecraft.InvUtils;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
-// @Format craft 1 2 3 4
+// @Format craft_inv 1 2 3 4
 // You DONT need to be in a crafting table actually use it
 public class CraftInvCmd extends ScriptCommand implements ThenChainable {
     public CraftInvCmd() {

@@ -2,6 +2,8 @@ package io.github.itzispyder.clickcrystals.util.minecraft;
 
 import io.github.itzispyder.clickcrystals.Global;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
+import net.minecraft.client.gui.screen.ingame.CrafterScreen;
+import net.minecraft.client.gui.screen.ingame.CraftingScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -164,5 +166,9 @@ public final class InvUtils implements Global {
         ClickSlotC2SPacket swap = new ClickSlotC2SPacket(0, 1, (short) slot, (byte) button, action, Int2ObjectMaps.singleton(slot, hash), hash);
         PlayerUtils.sendPacket(swap);
         return true;
+    }
+
+    public static void craft(String recipie){
+
     }
 }

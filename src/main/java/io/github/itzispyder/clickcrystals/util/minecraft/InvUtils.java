@@ -1,13 +1,17 @@
 package io.github.itzispyder.clickcrystals.util.minecraft;
 
 import io.github.itzispyder.clickcrystals.Global;
+import io.github.itzispyder.clickcrystals.scripting.ScriptArgs;
+import io.github.itzispyder.clickcrystals.scripting.ScriptParser;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import net.minecraft.network.HashedStack;
 import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -176,5 +180,45 @@ public final class InvUtils implements Global {
         ServerboundContainerClickPacket swap = new ServerboundContainerClickPacket(0, 1, (short) slot, (byte) button, action, Int2ObjectMaps.singleton(slot, hash), hash);
         PlayerUtils.sendPacket(swap);
         return true;
+    }
+
+    public static void craftCCS(AbstractContainerMenu menu, ScriptArgs args, int gridSize){
+        for (int i = 0; i < gridSize; i++) {
+            Predicate<ItemStack> item = ScriptParser.parseItemPredicate(args.get(i).toString());
+
+            for (Slot slot : menu.slots) {
+                if (slot.index < 10) continue;
+                ItemStack stack = slot.getItem();
+
+                if (item.test(stack)) {
+                    if (!menu.getCarried().isEmpty()) {
+                        return;
+                    }
+
+                    int from = slot.index;
+
+                    mc.gameMode.handleContainerInput(menu.containerId, from, 0, ContainerInput.PICKUP, mc.player);
+                    mc.gameMode.handleContainerInput(menu.containerId, i+1, 1, ContainerInput.PICKUP, mc.player);
+                    mc.gameMode.handleContainerInput(menu.containerId, from, 0, ContainerInput.PICKUP, mc.player);
+
+                    break;
+                }
+            }
+        }
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(100); // if your ping is over this, fuck you
+                mc.execute(() -> {
+                    mc.gameMode.handleContainerInput(
+                            menu.containerId,
+                            0,
+                            0,
+                            ContainerInput.QUICK_MOVE,
+                            mc.player
+                    );
+                });
+            } catch (Exception ignored) {}
+        }).start();
     }
 }

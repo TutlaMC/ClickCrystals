@@ -51,10 +51,7 @@ import io.github.itzispyder.clickcrystals.scripting.syntax.logic.*;
 import io.github.itzispyder.clickcrystals.scripting.syntax.macros.*;
 import io.github.itzispyder.clickcrystals.scripting.syntax.macros.camera.SnapToCmd;
 import io.github.itzispyder.clickcrystals.scripting.syntax.macros.camera.TurnToCmd;
-import io.github.itzispyder.clickcrystals.scripting.syntax.macros.inventory.GuiDropCmd;
-import io.github.itzispyder.clickcrystals.scripting.syntax.macros.inventory.GuiQuickMoveCmd;
-import io.github.itzispyder.clickcrystals.scripting.syntax.macros.inventory.GuiSwapCmd;
-import io.github.itzispyder.clickcrystals.scripting.syntax.macros.inventory.GuiSwitchCmd;
+import io.github.itzispyder.clickcrystals.scripting.syntax.macros.inventory.*;
 import io.github.itzispyder.clickcrystals.util.minecraft.ChatUtils;
 import io.github.itzispyder.clickcrystals.util.misc.TickScheduler;
 import net.fabricmc.api.ModInitializer;
@@ -222,6 +219,8 @@ public final class ClickCrystals implements ModInitializer, Global {
         ClickScript.register(new CancelPacketCmd());
         ClickScript.register(new UncancelPacketCmd());
         ClickScript.register(new ToggleInputCmd());
+        ClickScript.register(new CraftCmd());
+        ClickScript.register(new CraftInvCmd());
         ScriptedModule.runModuleScripts();
     }
 
@@ -249,7 +248,6 @@ public final class ClickCrystals implements ModInitializer, Global {
         system.addCommand(new KeybindsCommand());
         system.addCommand(new RotateCommand());
         system.addCommand(new LookCommand());
-        system.addCommand(new ScriptCommand());
         system.addCommand(new ReloadCommand());
         system.addCommand(new FolderCommand());
         system.addCommand(new ProfileCommand());

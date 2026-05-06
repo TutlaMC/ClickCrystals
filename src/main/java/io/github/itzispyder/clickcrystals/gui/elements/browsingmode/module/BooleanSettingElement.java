@@ -6,7 +6,7 @@ import io.github.itzispyder.clickcrystals.gui.misc.animators.Animator;
 import io.github.itzispyder.clickcrystals.gui.misc.animators.PollingAnimator;
 import io.github.itzispyder.clickcrystals.modules.settings.BooleanSetting;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class BooleanSettingElement extends SettingElement<BooleanSetting> {
 
@@ -17,7 +17,7 @@ public class BooleanSettingElement extends SettingElement<BooleanSetting> {
     }
 
     @Override
-    public void onRender(DrawContext context, int mouseX, int mouseY) {
+    public void onRender(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         this.renderSettingDetails(context);
         int drawY = y + height / 2;
         int drawX = x + width - 20 - 5;
@@ -31,10 +31,11 @@ public class BooleanSettingElement extends SettingElement<BooleanSetting> {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY, int button) {
+    public void mouseClicked(double mouseX, double mouseY, int button) {
         if (isHovered((int)mouseX, (int)mouseY)) {
             setting.setVal(!setting.getVal());
         }
+        super.mouseClicked(mouseX, mouseY, button);
     }
 
     public BooleanSetting getSetting() {

@@ -2,19 +2,19 @@ package io.github.itzispyder.clickcrystals.util.minecraft;
 
 import com.mojang.authlib.GameProfile;
 import io.github.itzispyder.clickcrystals.Global;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAttachmentType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityAttachment;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Comparator;
 import java.util.List;
@@ -27,62 +27,66 @@ import java.util.function.Predicate;
 public final class PlayerUtils implements Global {
 
     public static boolean invalid() {
-        return mc == null || mc.player == null || mc.world == null || mc.interactionManager == null || mc.options == null;
+        return mc == null || mc.player == null || mc.level == null || mc.gameMode == null || mc.options == null;
     }
 
     public static boolean valid() {
         return !invalid();
     }
 
-    public static boolean playerValid(PlayerEntity player) {
+    public static boolean playerValid(Player player) {
         if (invalid() || player == null) {
             return false;
         }
 
-        ClientPlayerEntity p = mc.player;
+        LocalPlayer p = mc.player;
         GameProfile profile = player.getGameProfile();
-        PlayerListEntry entry = p.networkHandler.getPlayerListEntry(profile.getId());
+        PlayerInfo entry = p.connection.getPlayerInfo(profile.id());
 
         return entry != null;
     }
 
-    public static ClientPlayerEntity player() {
+    public static LocalPlayer player() {
         return mc.player;
     }
 
-    public static ClientPlayerInteractionManager getInteractions() {
-        return mc.interactionManager;
+    public static MultiPlayerGameMode getInteractions() {
+        return mc.gameMode;
     }
 
-    public static World getWorld() {
-        return player().getWorld();
+    public static Level getWorld() {
+        return player().level();
     }
 
-    public static ClientWorld getClientWorld() {
-        return player().clientWorld;
+    public static ClientLevel getClientWorld() {
+        return mc.level;
     }
 
-    public static Vec3d getPos() {
-        return player().getPos();
+    public static Vec3 getPos() {
+        return player().position();
     }
 
-    public static Vec3d getEyes() {
-        return player().getEyePos();
+    public static Vec3 getEyes() {
+        return player().getEyePosition();
     }
 
-    public static ClientPlayerInteractionManager getInteractionManager() {
-        return mc.interactionManager;
+    public static Vec3 getDir() {
+        return player().getLookAngle();
+    }
+
+    public static MultiPlayerGameMode getInteractionManager() {
+        return mc.gameMode;
     }
 
     public static float getEntityNameLabelHeight(Entity entity, float tickDelta) {
-        float yaw = entity.getYaw(tickDelta);
-        Vec3d vec = entity.getAttachments().getPointNullable(EntityAttachmentType.NAME_TAG, 0, yaw);
+        float yaw = entity.getViewYRot(tickDelta);
+        Vec3 vec = entity.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, yaw);
         return (float) (vec == null ? 0.5 : vec.y + 0.5);
     }
 
     public static void sendPacket(Packet<?> packet) {
         if (!invalid()) {
-            player().networkHandler.sendPacket(packet);
+            player().connection.send(packet);
         }
     }
 
@@ -92,7 +96,7 @@ public final class PlayerUtils implements Global {
         }
 
         GameProfile p = player().getGameProfile();
-        PlayerListEntry entry = player().networkHandler.getPlayerListEntry(p.getId());
+        PlayerInfo entry = player().connection.getPlayerInfo(p.id());
 
         if (entry == null) {
             return -1;
@@ -102,22 +106,22 @@ public final class PlayerUtils implements Global {
     }
 
     public static int getFps() {
-        return mc.getCurrentFps();
+        return mc.getFps();
     }
 
     public static boolean isMoving() {
         if (invalid())
             return false;
 
-        ClientPlayerEntity p = player();
-        return p.sidewaysSpeed != 0 || p.forwardSpeed != 0;
+        LocalPlayer p = player();
+        return p.xxa != 0 || p.zza != 0;
     }
 
     public static boolean isColliding() {
         if (invalid())
             return false;
 
-        ClientPlayerEntity p = player();
+        LocalPlayer p = player();
         return p.horizontalCollision || p.verticalCollision;
     }
 
@@ -125,7 +129,7 @@ public final class PlayerUtils implements Global {
         if (invalid())
             return false;
 
-        ClientPlayerEntity p = player();
+        LocalPlayer p = player();
         return p.horizontalCollision;
     }
 
@@ -133,11 +137,11 @@ public final class PlayerUtils implements Global {
         if (invalid())
             return false;
 
-        ClientPlayerEntity p = player();
+        LocalPlayer p = player();
         return p.verticalCollision;
     }
 
-    public static void boxIterator(World world, Box box, BiConsumer<BlockPos, BlockState> function) {
+    public static void boxIterator(Level world, AABB box, BiConsumer<BlockPos, BlockState> function) {
         for (double x = box.minX; x <= box.maxX; x++) {
             for (double y = box.minY; y <= box.maxY; y++) {
                 for (double z = box.minZ; z <= box.maxZ; z++) {
@@ -153,9 +157,9 @@ public final class PlayerUtils implements Global {
         }
     }
 
-    public static Entity getNearestEntity(World world, Entity exclude, Vec3d at, double range, Predicate<Entity> filter) {
-        List<Entity> candidates = world.getOtherEntities(exclude, Box.from(at).expand(range), filter).stream()
-                .sorted(Comparator.comparing(entity -> entity.getPos().distanceTo(at)))
+    public static Entity getNearestEntity(Level world, Entity exclude, Vec3 at, double range, Predicate<Entity> filter) {
+        List<Entity> candidates = world.getEntities(exclude, AABB.unitCubeFromLowerCorner(at).inflate(range), filter).stream()
+                .sorted(Comparator.comparing(entity -> entity.position().distanceTo(at)))
                 .toList();
 
         if (candidates.isEmpty()) {
@@ -165,17 +169,17 @@ public final class PlayerUtils implements Global {
     }
 
     public static boolean hasEffects() {
-        return valid() && !player().getStatusEffects().isEmpty();
+        return valid() && !player().getActiveEffects().isEmpty();
     }
 
     public static Entity getNearestEntity(double range, Predicate<Entity> filter) {
         if (invalid()) return null;
-        return getNearestEntity(getWorld(), player(), player().getPos(), range, filter);
+        return getNearestEntity(getWorld(), player(), player().position(), range, filter);
     }
 
-    public static PlayerEntity getNearestPlayer(double range, Predicate<Entity> filter) {
+    public static Player getNearestPlayer(double range, Predicate<Entity> filter) {
         if (invalid()) return null;
-        return (PlayerEntity)getNearestEntity(getWorld(), player(), player().getPos(), range, entity -> entity instanceof PlayerEntity && filter.test(entity));
+        return (Player)getNearestEntity(getWorld(), player(), player().position(), range, entity -> entity instanceof Player && filter.test(entity));
     }
 
     public static boolean runOnNearestBlock(double range, BiPredicate<BlockPos, BlockState> filter, BiConsumer<BlockPos, BlockState> function) {
@@ -186,13 +190,13 @@ public final class PlayerUtils implements Global {
         AtomicReference<Double> nearestDist = new AtomicReference<>(64.0);
         AtomicReference<BlockPos> nearestPos = new AtomicReference<>();
         AtomicReference<BlockState> nearestState = new AtomicReference<>();
-        Box box = player().getBoundingBox().expand(range);
-        Vec3d player = player().getPos();
-        World world = getWorld();
+        AABB box = player().getBoundingBox().inflate(range);
+        Vec3 player = player().position();
+        Level world = getWorld();
 
         PlayerUtils.boxIterator(world, box, (pos, state) -> {
-            if (filter.test(pos, state) && pos.isWithinDistance(player, nearestDist.get())) {
-                nearestDist.set(Math.sqrt(pos.getSquaredDistance(player)));
+            if (filter.test(pos, state) && pos.closerToCenterThan(player, nearestDist.get())) {
+                nearestDist.set(Math.sqrt(pos.distToCenterSqr(player)));
                 nearestPos.set(pos);
                 nearestState.set(state);
             }
@@ -230,13 +234,13 @@ public final class PlayerUtils implements Global {
 
         AtomicReference<Double> nearestDist = new AtomicReference<>(range);
         AtomicReference<BlockPos> nearestPos = new AtomicReference<>();
-        Box box = player().getBoundingBox().expand(range);
-        Vec3d playerPos = player().getPos();
-        World world = getWorld();
+        AABB box = player().getBoundingBox().inflate(range);
+        Vec3 playerPos = player().position();
+        Level world = getWorld();
 
         boxIterator(world, box, (pos, state) -> {
-            if (filter.test(state) && pos.isWithinDistance(playerPos, nearestDist.get())) {
-                double distance = Math.sqrt(pos.getSquaredDistance(playerPos));
+            if (filter.test(state) && pos.closerToCenterThan(playerPos, nearestDist.get())) {
+                double distance = Math.sqrt(pos.distToCenterSqr(playerPos));
                 if (distance < nearestDist.get()) {
                     nearestDist.set(distance);
                     nearestPos.set(pos);

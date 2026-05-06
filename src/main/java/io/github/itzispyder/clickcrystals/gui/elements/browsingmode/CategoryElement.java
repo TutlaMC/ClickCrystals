@@ -6,7 +6,7 @@ import io.github.itzispyder.clickcrystals.gui.misc.Shades;
 import io.github.itzispyder.clickcrystals.gui.screens.modulescreen.BrowsingScreen;
 import io.github.itzispyder.clickcrystals.modules.Category;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class CategoryElement extends GuiElement {
 
@@ -19,8 +19,8 @@ public class CategoryElement extends GuiElement {
     }
 
     @Override
-    public void onRender(DrawContext context, int mouseX, int mouseY) {
-        if (BrowsingScreen.currentCategory == category && mc.currentScreen instanceof BrowsingScreen) {
+    public void onRender(GuiGraphicsExtractor context, int mouseX, int mouseY) {
+        if (BrowsingScreen.currentCategory == category && mc.screen instanceof BrowsingScreen) {
             RenderUtils.fillRoundHoriLine(context, x, y, width, height, Shades.GENERIC_LOW);
             RenderUtils.fillRoundShadow(context, x, y, width, height, height / 2, 3, 0x8000B7FF, 0x0000B7FF);
         }
@@ -32,9 +32,12 @@ public class CategoryElement extends GuiElement {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY, int button) {
-        BrowsingScreen.currentCategory = category;
-        UserInputListener.openModulesScreen();
+    public void mouseClicked(double mouseX, double mouseY, int button) {
+        if (isHovered((int)mouseX, (int)mouseY)) {
+            BrowsingScreen.currentCategory = category;
+            UserInputListener.openModulesScreen();
+        }
+        super.mouseClicked(mouseX, mouseY, button);
     }
 
     public Category getCategory() {

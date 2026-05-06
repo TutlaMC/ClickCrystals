@@ -3,16 +3,18 @@ package io.github.itzispyder.clickcrystals.modules.modules.crystalling;
 import io.github.itzispyder.clickcrystals.events.EventHandler;
 import io.github.itzispyder.clickcrystals.events.Listener;
 import io.github.itzispyder.clickcrystals.events.events.networking.PacketSendEvent;
+import io.github.itzispyder.clickcrystals.modrinth.ModrinthNoNo;
 import io.github.itzispyder.clickcrystals.modules.Categories;
 import io.github.itzispyder.clickcrystals.modules.Module;
 import io.github.itzispyder.clickcrystals.modules.ModuleSetting;
 import io.github.itzispyder.clickcrystals.modules.settings.SettingSection;
 import io.github.itzispyder.clickcrystals.util.minecraft.BlockUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.HotbarUtils;
-import net.minecraft.item.Items;
-import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
+import net.minecraft.world.item.Items;
 
+@ModrinthNoNo
 public class CrystAnchor extends Module implements Listener {
 
     private final SettingSection scGeneral = getGeneralSection();
@@ -51,8 +53,8 @@ public class CrystAnchor extends Module implements Listener {
 
     @EventHandler
     private void onClickBlock(PacketSendEvent e) {
-        if (e.getPacket() instanceof PlayerInteractBlockC2SPacket packet) {
-            final BlockPos pos = packet.getBlockHitResult().getBlockPos();
+        if (e.getPacket() instanceof ServerboundUseItemOnPacket packet) {
+            final BlockPos pos = packet.getHitResult().getBlockPos();
 
             if (BlockUtils.canCrystalOn(pos)) return;
             if (!HotbarUtils.has(Items.RESPAWN_ANCHOR)) return;
@@ -64,7 +66,7 @@ public class CrystAnchor extends Module implements Listener {
             if (crystal | sword | pick) {
                 e.setCancelled(true);
                 HotbarUtils.search(Items.RESPAWN_ANCHOR);
-                BlockUtils.interact(packet.getBlockHitResult());
+                BlockUtils.interact(packet.getHitResult());
                 HotbarUtils.search(Items.GLOWSTONE);
             }
         }

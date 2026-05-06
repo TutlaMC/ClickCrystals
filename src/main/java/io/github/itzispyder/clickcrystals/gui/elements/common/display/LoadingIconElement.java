@@ -4,7 +4,7 @@ import io.github.itzispyder.clickcrystals.gui.GuiElement;
 import io.github.itzispyder.clickcrystals.gui.misc.Tex;
 import io.github.itzispyder.clickcrystals.gui.misc.animators.Animator;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class LoadingIconElement extends GuiElement {
 
@@ -15,19 +15,19 @@ public class LoadingIconElement extends GuiElement {
     }
 
     @Override
-    public void onRender(DrawContext context, int mouseX, int mouseY) {
+    public void onRender(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         int x = this.x - this.width / 2;
         int y = this.y - this.height / 2;
 
-        context.getMatrices().pushMatrix();
+        context.pose().pushMatrix();
 //        context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(360 * (float)animator.getProgress()), this.x, this.y, 0);
-        context.getMatrices().rotateAbout(360 * (float)animator.getProgress(), this.x, this.y);
+        context.pose().rotateAbout(360 * (float)animator.getProgress(), this.x, this.y);
         RenderUtils.drawTexture(context, Tex.Icons.LOADING, x, y, width, height);
-        context.getMatrices().popMatrix();
+        context.pose().popMatrix();
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY, int button) {
-
+    public void mouseClicked(double mouseX, double mouseY, int button) {
+        super.mouseClicked(mouseX, mouseY, button);
     }
 }

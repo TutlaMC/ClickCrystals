@@ -1,9 +1,7 @@
 package io.github.itzispyder.clickcrystals.modules.modules;
 
-import io.github.itzispyder.clickcrystals.client.clickscript.ClickScript;
-import io.github.itzispyder.clickcrystals.client.networking.EntityStatusType;
 import io.github.itzispyder.clickcrystals.client.networking.PacketMapper;
-import io.github.itzispyder.clickcrystals.data.Config;
+import io.github.itzispyder.clickcrystals.client.system.Config;
 import io.github.itzispyder.clickcrystals.events.EventHandler;
 import io.github.itzispyder.clickcrystals.events.events.client.*;
 import io.github.itzispyder.clickcrystals.events.events.networking.GameJoinEvent;
@@ -12,15 +10,13 @@ import io.github.itzispyder.clickcrystals.events.events.networking.PacketReceive
 import io.github.itzispyder.clickcrystals.events.events.networking.PacketSendEvent;
 import io.github.itzispyder.clickcrystals.events.events.world.*;
 import io.github.itzispyder.clickcrystals.modules.Categories;
-import io.github.itzispyder.clickcrystals.modules.scripts.listeners.*;
+import io.github.itzispyder.clickcrystals.scripting.ClickScript;
+import io.github.itzispyder.clickcrystals.scripting.syntax.listeners.*;
 import io.github.itzispyder.clickcrystals.util.minecraft.PlayerUtils;
 import io.github.itzispyder.clickcrystals.util.misc.Timer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
+import net.minecraft.network.protocol.game.*;
+import net.minecraft.world.entity.EntityEvent;
+import net.minecraft.world.entity.player.Player;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,6 +42,7 @@ public class ScriptedModule extends ListenerModule {
     public final List<ChatSendListener> chatSendListeners = new ArrayList<>();
     public final List<PacketListener> packetReceiveListeners = new ArrayList<>();
     public final List<PacketListener> packetSendListeners = new ArrayList<>();
+    public final List<SoundPlayListener> soundPlayListeners = new ArrayList<>();
     public final List<Runnable> totemPopListeners = new ArrayList<>();
     public final List<Runnable> moduleEnableListeners = new ArrayList<>();
     public final List<Runnable> moduleDisableListeners = new ArrayList<>();
@@ -54,6 +51,9 @@ public class ScriptedModule extends ListenerModule {
     public final List<Runnable> deathListeners = new ArrayList<>();
     public final List<Runnable> gameJoinListeners = new ArrayList<>();
     public final List<Runnable> gameLeaveListeners = new ArrayList<>();
+    public final List<Runnable> mouseWheelUpListeners = new ArrayList<>();
+    public final List<Runnable> mouseWheelDownListeners = new ArrayList<>();
+    public final List<Runnable> mouseWheelListeners = new ArrayList<>();
 
 
     public final String filepath, filename, parentFolder;
@@ -113,12 +113,30 @@ public class ScriptedModule extends ListenerModule {
         packetReadCancelQueue.clear();
         packetReceiveListeners.clear();
         packetSendListeners.clear();
+
+        soundPlayListeners.clear();
+        mouseWheelListeners.clear();
+        mouseWheelUpListeners.clear();
+        mouseWheelDownListeners.clear();
     }
 
     @EventHandler
     public void onMouseClick(MouseClickEvent e) {
         for (ClickListener l : clickListeners) {
             l.pass(e);
+        }
+    }
+
+    @EventHandler
+    public void onMouseScroll(MouseScrollEvent e) {
+        double amount = e.getDeltaY();
+        if (amount > 0) {
+            mouseWheelListeners.forEach(Runnable::run);
+            mouseWheelUpListeners.forEach(Runnable::run);
+        }
+        else if (amount < 0) {
+            mouseWheelListeners.forEach(Runnable::run);
+            mouseWheelDownListeners.forEach(Runnable::run);
         }
     }
 
@@ -182,6 +200,13 @@ public class ScriptedModule extends ListenerModule {
     }
 
     @EventHandler
+    public void onSoundPlay(SoundPlayEvent e) {
+        for (SoundPlayListener l : soundPlayListeners) {
+            l.pass(e);
+        }
+    }
+
+    @EventHandler
     public void onPacketSend(PacketSendEvent e) {
         if (PlayerUtils.invalid())
             return;
@@ -203,19 +228,19 @@ public class ScriptedModule extends ListenerModule {
             }
         }
 
-        if (e.getPacket() instanceof PlayerInteractBlockC2SPacket packet) {
+        if (e.getPacket() instanceof ServerboundUseItemOnPacket packet) {
             for (BlockInteractListener l : blockInteractListeners) {
-                l.pass(packet.getBlockHitResult(), packet.getHand());
+                l.pass(packet.getHitResult(), packet.getHand());
             }
         }
-        else if (e.getPacket() instanceof PlayerActionC2SPacket packet) {
-            if (packet.getAction() == PlayerActionC2SPacket.Action.START_DESTROY_BLOCK) {
+        else if (e.getPacket() instanceof ServerboundPlayerActionPacket packet) {
+            if (packet.getAction() == ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK) {
                 for (BlockPunchListener l : blockPunchListeners) {
                     l.pass(packet.getPos(), packet.getDirection());
                 }
             }
         }
-        else if (e.getPacket() instanceof PlayerMoveC2SPacket packet) {
+        else if (e.getPacket() instanceof ServerboundMovePlayerPacket packet) {
             for (MoveListener l : moveListeners) {
                 l.pass(packet);
             }
@@ -252,17 +277,17 @@ public class ScriptedModule extends ListenerModule {
             }
         }
 
-        if (e.getPacket() instanceof EntityStatusS2CPacket packet) {
-            if (packet.getEntity(PlayerUtils.getWorld()) instanceof PlayerEntity p && p.getId() == PlayerUtils.player().getId()) {
-                if (packet.getStatus() == EntityStatusType.TOTEM_POP) {
+        if (e.getPacket() instanceof ClientboundEntityEventPacket packet) {
+            if (packet.getEntity(PlayerUtils.getWorld()) instanceof Player p && p.getId() == PlayerUtils.player().getId()) {
+                if (packet.getEventId() == EntityEvent.PROTECTED_FROM_DEATH) {
                     totemPopListeners.forEach(Runnable::run);
                 }
-                else if (packet.getStatus() == EntityStatusType.DEATH) {
+                else if (packet.getEventId() == EntityEvent.DEATH) {
                     deathListeners.forEach(Runnable::run);
                 }
             }
         }
-        else if (e.getPacket() instanceof PlayerRespawnS2CPacket) {
+        else if (e.getPacket() instanceof ClientboundRespawnPacket) {
             respawnListeners.forEach(Runnable::run);
         }
     }

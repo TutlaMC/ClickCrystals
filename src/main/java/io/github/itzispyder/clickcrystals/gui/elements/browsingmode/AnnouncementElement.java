@@ -1,11 +1,11 @@
 package io.github.itzispyder.clickcrystals.gui.elements.browsingmode;
 
-import io.github.itzispyder.clickcrystals.data.announce.Announcement;
+import io.github.itzispyder.clickcrystals.client.system.Announcement;
 import io.github.itzispyder.clickcrystals.gui.GuiElement;
 import io.github.itzispyder.clickcrystals.gui.misc.Shades;
 import io.github.itzispyder.clickcrystals.util.minecraft.TextUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class AnnouncementElement extends GuiElement {
 
@@ -29,7 +29,7 @@ public class AnnouncementElement extends GuiElement {
     }
 
     @Override
-    public void onRender(DrawContext context, int mouseX, int mouseY) {
+    public void onRender(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         RenderUtils.fillRoundRect(context, x, y, width, height, 3, Shades.BLACK);
 
         int caret = y + 5;
@@ -60,8 +60,8 @@ public class AnnouncementElement extends GuiElement {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY, int button) {
-
+    public void mouseClicked(double mouseX, double mouseY, int button) {
+        super.mouseClicked(mouseX, mouseY, button);
     }
 
     public Announcement getAnnouncement() {

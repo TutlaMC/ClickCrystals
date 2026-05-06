@@ -8,7 +8,7 @@ import io.github.itzispyder.clickcrystals.gui.misc.organizers.GridOrganizer;
 import io.github.itzispyder.clickcrystals.gui.screens.modulescreen.OverviewScreen;
 import io.github.itzispyder.clickcrystals.modules.Module;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.Comparator;
 import java.util.List;
@@ -27,16 +27,16 @@ public class SearchCategoryElement extends GuiElement {
     }
 
     @Override
-    public void onRender(DrawContext context, int mouseX, int mouseY) {
+    public void onRender(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         RenderUtils.fillRoundRect(context, x, y, width, height, 5, Shades.TRANS_BLACK);
         RenderUtils.drawTexture(context, Tex.ICON, x + 5, y + 7, 10, 10);
         RenderUtils.drawText(context, "Overview GUI", x + 18, y + 9, 0.9F, false);
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY, int button) {
-        super.onClick(mouseX, mouseY, button);
-        if (mc.currentScreen instanceof OverviewScreen screen) {
+    public void mouseClicked(double mouseX, double mouseY, int button) {
+        super.mouseClicked(mouseX, mouseY, button);
+        if (mc.screen instanceof OverviewScreen screen) {
             if (searchbar.isHovered((int)mouseX, (int)mouseY)) {
                 screen.selected = searchbar;
             }

@@ -10,8 +10,8 @@ import io.github.itzispyder.clickcrystals.modules.ModuleSetting;
 import io.github.itzispyder.clickcrystals.modules.settings.SettingSection;
 import io.github.itzispyder.clickcrystals.util.minecraft.PlayerUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 
 public class AdvancedSettingScreen extends DefaultBase {
 
@@ -90,7 +90,7 @@ public class AdvancedSettingScreen extends DefaultBase {
     }
 
     @Override
-    public void baseRender(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void baseRender(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         this.renderDefaultBase(context);
 
         // content
@@ -101,15 +101,15 @@ public class AdvancedSettingScreen extends DefaultBase {
     }
 
     @Override
-    public void resize(MinecraftClient client, int width, int height) {
-        client.setScreen(new AdvancedSettingScreen());
+    public void resize(int width, int height) {
+        minecraft.setScreen(new AdvancedSettingScreen());
         ClickCrystals.config.saveKeybinds();
         ClickCrystals.config.save();
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        super.mouseReleased(mouseX, mouseY, button);
+    public boolean mouseReleased(MouseButtonEvent click) {
+        super.mouseReleased(click);
         ClickCrystals.config.saveKeybinds();
         ClickCrystals.config.save();
         return true;

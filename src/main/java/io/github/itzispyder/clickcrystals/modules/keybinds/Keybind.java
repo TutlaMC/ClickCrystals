@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class Keybind implements Global {
 
+    public static final int DEFAULT_SCANCODE = 42;
     public static final int NONE = -1;
     public static final Map<Integer, String> EXTRAS = ManualMap.fromItems(
             GLFW.GLFW_KEY_LEFT_SHIFT, "LS",
@@ -66,7 +67,7 @@ public class Keybind implements Global {
     }
 
     public void onPress() {
-        if (bindCondition.meets(this, mc.currentScreen)) {
+        if (bindCondition.meets(this, mc.screen)) {
             keyAction.onKey(this);
         }
     }
@@ -113,9 +114,9 @@ public class Keybind implements Global {
 
         if (name.length() == 1) {
             int key = KeyEvent.getExtendedKeyCodeForChar(name.charAt(0));
-            return key != 0 ? key : -1;
+            return key != 0 ? key : NONE;
         }
-        return -1;
+        return NONE;
     }
 
     public void setKey(int key) {

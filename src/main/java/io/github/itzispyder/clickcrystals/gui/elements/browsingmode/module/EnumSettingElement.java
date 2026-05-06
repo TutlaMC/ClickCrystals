@@ -3,7 +3,7 @@ package io.github.itzispyder.clickcrystals.gui.elements.browsingmode.module;
 import io.github.itzispyder.clickcrystals.gui.misc.Shades;
 import io.github.itzispyder.clickcrystals.modules.settings.EnumSetting;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class EnumSettingElement extends SettingElement<EnumSetting<?>> {
 
@@ -20,7 +20,7 @@ public class EnumSettingElement extends SettingElement<EnumSetting<?>> {
     }
 
     @Override
-    public void onRender(DrawContext context, int mouseX, int mouseY) {
+    public void onRender(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         this.renderSettingDetails(context);
         int drawY = y + height / 2;
         int drawX = x + width / 4 * 3 - 5;
@@ -37,7 +37,10 @@ public class EnumSettingElement extends SettingElement<EnumSetting<?>> {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY, int button) {
-        setting.next();
+    public void mouseClicked(double mouseX, double mouseY, int button) {
+        if (isHovered((int)mouseX, (int)mouseY)) {
+            setting.next();
+        }
+        super.mouseClicked(mouseX, mouseY, button);
     }
 }

@@ -2,7 +2,7 @@ package io.github.itzispyder.clickcrystals.gui.screens.scripts;
 
 import com.google.gson.Gson;
 import io.github.itzispyder.clickcrystals.Global;
-import io.github.itzispyder.clickcrystals.data.Config;
+import io.github.itzispyder.clickcrystals.client.system.Config;
 import io.github.itzispyder.clickcrystals.util.FileValidationUtils;
 
 import java.io.File;
@@ -37,7 +37,7 @@ public record ScriptInfo(Info... scripts) implements Global {
 
     private static synchronized void get() {
         try {
-            java.net.URL u = new URL(URL);
+            URL u = new URL(URL);
             InputStream is = u.openStream();
             InputStreamReader isr = new InputStreamReader(is);
             Gson gson = new Gson();

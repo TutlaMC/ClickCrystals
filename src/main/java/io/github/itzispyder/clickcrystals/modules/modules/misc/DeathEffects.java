@@ -1,9 +1,9 @@
 package io.github.itzispyder.clickcrystals.modules.modules.misc;
 
-import io.github.itzispyder.clickcrystals.client.networking.EntityStatusType;
 import io.github.itzispyder.clickcrystals.events.EventHandler;
 import io.github.itzispyder.clickcrystals.events.events.networking.PacketReceiveEvent;
 import io.github.itzispyder.clickcrystals.events.events.world.ClientTickEndEvent;
+import io.github.itzispyder.clickcrystals.gui.misc.Color;
 import io.github.itzispyder.clickcrystals.modules.Categories;
 import io.github.itzispyder.clickcrystals.modules.ModuleSetting;
 import io.github.itzispyder.clickcrystals.modules.modules.ListenerModule;
@@ -12,12 +12,13 @@ import io.github.itzispyder.clickcrystals.modules.settings.SettingSection;
 import io.github.itzispyder.clickcrystals.util.minecraft.PlayerUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.component.type.FireworkExplosionComponent;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
+import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityEvent;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.component.FireworkExplosion;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -40,10 +41,10 @@ public class DeathEffects extends ListenerModule {
             .def(Entities.BOTH)
             .build()
     );
-    public final ModuleSetting<FireworkExplosionComponent.Type> shape = scGeneral.add(EnumSetting.create(FireworkExplosionComponent.Type.class)
+    public final ModuleSetting<FireworkExplosion.Shape> shape = scGeneral.add(EnumSetting.create(FireworkExplosion.Shape.class)
             .name("rocket-shape")
             .description("Decide what will be the rocket shape")
-            .def(FireworkExplosionComponent.Type.BURST)
+            .def(FireworkExplosion.Shape.BURST)
             .build()
     );
     public final ModuleSetting<Integer> vRocket = scGeneral.add(createIntSetting()
@@ -54,31 +55,10 @@ public class DeathEffects extends ListenerModule {
             .min(0)
             .build()
     );
-    public final ModuleSetting<Double> red = rocketColors.add(createDoubleSetting()
-            .name("Red")
-            .description("Decide how much red will be on the color pattern.")
-            .def(255.0)
-            .max(255.0)
-            .min(0.0)
-            .decimalPlaces(1)
-            .build()
-    );
-    public final ModuleSetting<Double> green = rocketColors.add(createDoubleSetting()
-            .name("Green")
-            .description("Decide how much green will be on the color pattern.")
-            .def(255.0)
-            .max(255.0)
-            .min(0.0)
-            .decimalPlaces(1)
-            .build()
-    );
-    public final ModuleSetting<Double> blue = rocketColors.add(createDoubleSetting()
-            .name("Blue")
-            .description("Decide how much blue will be on the color pattern.")
-            .def(255.0)
-            .max(255.0)
-            .min(0.0)
-            .decimalPlaces(1)
+    public final ModuleSetting<Color> color = rocketColors.add(createColorSetting()
+            .name("color")
+            .description("Color of the rockets")
+            .def(Color.WHITE)
             .build()
     );
 
@@ -91,11 +71,11 @@ public class DeathEffects extends ListenerModule {
 
     @EventHandler
     private void onReceivePacket(PacketReceiveEvent event) {
-        if (!(event.getPacket() instanceof EntityStatusS2CPacket packet)) {
+        if (!(event.getPacket() instanceof ClientboundEntityEventPacket packet)) {
             return;
         }
 
-        if (packet.getStatus() != EntityStatusType.DEATH) {
+        if (packet.getEventId() != EntityEvent.DEATH) {
             return;
         }
 
@@ -108,35 +88,20 @@ public class DeathEffects extends ListenerModule {
         else spawnLightning(entity);
     }
 
-    public int rocketColor() {
-        int redValue = red.getVal().intValue();
-        int greenValue = green.getVal().intValue();
-        int blueValue = blue.getVal().intValue();
-        return (redValue << 16) | (greenValue << 8) | blueValue;
-    }
-    private int fadeColor(int baseColor) {
-        int red = (baseColor >> 16) & 0xFF;
-        int green = (baseColor >> 8) & 0xFF;
-        int blue = baseColor & 0xFF;
-        red = Math.min(255, red + 30);
-        green = Math.min(255, green + 30);
-        blue = Math.min(255, blue + 30);
-        return (red << 16) | (green << 8) | blue;
-    }
-
     private void spawnFirework(Entity ent){
         IntList colors = new IntArrayList();
-        colors.add(rocketColor());
         IntList fadeColors = new IntArrayList();
-        fadeColors.add(fadeColor(rocketColor()));
-        FireworkExplosionComponent fireworkExplosion = new FireworkExplosionComponent(shape.getVal(),colors,fadeColors,true,true);
-        mc.world.addFireworkParticle(ent.getX(),ent.getY(),ent.getZ(),0,vRocket.getVal(),0, Collections.singletonList(fireworkExplosion));
+        colors.add(color.getVal().getHexOpaque());
+        fadeColors.add(color.getVal().brighter(2).getHexOpaque());
+
+        FireworkExplosion fireworkExplosion = new FireworkExplosion(shape.getVal(), colors, fadeColors,true,true);
+        mc.level.createFireworks(ent.getX(), ent.getY(), ent.getZ(), 0, vRocket.getVal(), 0, Collections.singletonList(fireworkExplosion));
     }
 
     private void spawnLightning(Entity ent) {
-        LightningEntity lightningEntity = new LightningEntity(EntityType.LIGHTNING_BOLT, mc.world);
-        lightningEntity.refreshPositionAfterTeleport(ent.getX(), ent.getY(), ent.getZ());
-        mc.world.addEntity(lightningEntity);
+        LightningBolt lightningEntity = new LightningBolt(EntityType.LIGHTNING_BOLT, mc.level);
+        lightningEntity.snapTo(ent.getX(), ent.getY(), ent.getZ());
+        mc.level.addEntity(lightningEntity);
         lightningRender.put(ent, System.currentTimeMillis());
     }
 
@@ -154,8 +119,8 @@ public class DeathEffects extends ListenerModule {
 
     public boolean shouldApplyEffect(Entity entity) {
         return switch (entitySelection.getVal()) {
-            case PLAYERS -> entity instanceof PlayerEntity;
-            case ENTITIES -> !(entity instanceof PlayerEntity);
+            case PLAYERS -> entity instanceof Player;
+            case ENTITIES -> !(entity instanceof Player);
             case BOTH -> true;
         };
     }

@@ -1,9 +1,9 @@
 package io.github.itzispyder.clickcrystals.gui.screens.settings;
 
 import io.github.itzispyder.clickcrystals.ClickCrystals;
-import io.github.itzispyder.clickcrystals.client.client.ClickCrystalsGate;
-import io.github.itzispyder.clickcrystals.data.announce.Announcement;
-import io.github.itzispyder.clickcrystals.data.announce.BulletinBoard;
+import io.github.itzispyder.clickcrystals.client.system.Announcement;
+import io.github.itzispyder.clickcrystals.client.system.BulletinBoard;
+import io.github.itzispyder.clickcrystals.client.system.ClickCrystalsGate;
 import io.github.itzispyder.clickcrystals.gui.elements.browsingmode.AnnouncementElement;
 import io.github.itzispyder.clickcrystals.gui.elements.common.display.LoadingIconElement;
 import io.github.itzispyder.clickcrystals.gui.elements.common.interactive.ScrollPanelElement;
@@ -11,8 +11,7 @@ import io.github.itzispyder.clickcrystals.gui.misc.Shades;
 import io.github.itzispyder.clickcrystals.gui.screens.DefaultBase;
 import io.github.itzispyder.clickcrystals.util.StringUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class InfoScreen extends DefaultBase {
 
@@ -79,7 +78,7 @@ public class InfoScreen extends DefaultBase {
     }
 
     @Override
-    public void baseRender(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void baseRender(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         this.renderDefaultBase(context);
 
         // content
@@ -90,7 +89,7 @@ public class InfoScreen extends DefaultBase {
     }
 
     @Override
-    public void resize(MinecraftClient client, int width, int height) {
-        client.setScreen(new InfoScreen());
+    public void resize(int width, int height) {
+        minecraft.setScreen(new InfoScreen());
     }
 }

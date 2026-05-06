@@ -2,6 +2,7 @@ package io.github.itzispyder.clickcrystals.modules.modules.anchoring;
 
 import io.github.itzispyder.clickcrystals.events.Listener;
 import io.github.itzispyder.clickcrystals.events.PostActionable;
+import io.github.itzispyder.clickcrystals.modrinth.ModrinthNoNo;
 import io.github.itzispyder.clickcrystals.modules.Categories;
 import io.github.itzispyder.clickcrystals.modules.Module;
 import io.github.itzispyder.clickcrystals.modules.ModuleSetting;
@@ -9,9 +10,10 @@ import io.github.itzispyder.clickcrystals.modules.settings.BooleanSetting;
 import io.github.itzispyder.clickcrystals.modules.settings.SettingSection;
 import io.github.itzispyder.clickcrystals.util.minecraft.HotbarUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.NbtUtils;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantments;
 
+@ModrinthNoNo
 public class BowSwap extends Module implements Listener {
 
     private final SettingSection scGeneral = getGeneralSection();
@@ -26,7 +28,7 @@ public class BowSwap extends Module implements Listener {
             HotbarUtils.search(BowSwap::isFlameBow);
 
             if (pull.getVal()) {
-                mc.options.useKey.setPressed(true);
+                mc.options.keyUse.setDown(true);
             }
         }
     };
@@ -47,7 +49,7 @@ public class BowSwap extends Module implements Listener {
         Module.acceptFor(TntSwap.class, tntSwap -> tntSwap.remove(postAction));
     }
 
-    /*
+    /* @improperIssues TODO?
     @EventHandler
     private void onInteract(PacketSendEvent e) {
         if (e.getPacket() instanceof PlayerInteractBlockC2SPacket packet) {

@@ -3,9 +3,9 @@ package io.github.itzispyder.clickcrystals.gui.hud.positionable;
 import io.github.itzispyder.clickcrystals.gui.hud.TextHud;
 import io.github.itzispyder.clickcrystals.modules.Module;
 import io.github.itzispyder.clickcrystals.modules.modules.clickcrystals.InGameHuds;
+import io.github.itzispyder.clickcrystals.util.MathUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.PlayerUtils;
-import io.github.itzispyder.clickcrystals.util.misc.CameraRotator;
-import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.player.LocalPlayer;
 
 public class RotationPositionableHud extends TextHud {
 
@@ -18,12 +18,14 @@ public class RotationPositionableHud extends TextHud {
         if (PlayerUtils.invalid())
             return "";
 
-        ClientPlayerEntity p = PlayerUtils.player();
-        int pitch = (int)p.getPitch();
-        int yaw = (int)p.getYaw();
-        CameraRotator.Goal g = new CameraRotator.Goal(pitch, yaw);
+        LocalPlayer p = PlayerUtils.player();
+        int pitch = (int)p.getXRot();
+        int yaw = (int)p.getYRot();
 
-        return "Pitch: %s, Yaw: %s".formatted(g.getPitch(), g.getYaw());
+        return "Pitch: %s, Yaw: %s".formatted(
+                MathUtils.wrapDegrees(pitch),
+                MathUtils.wrapDegrees(yaw)
+        );
     }
 
     public boolean canRender() {

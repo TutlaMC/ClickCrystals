@@ -18,7 +18,9 @@ ClickCrystals script is an interrupted scripting language that allows you to scr
 without any knowledge of coding. It contains no variables and mostly are just command lines that
 are very similar to Minecraft.
 
-The full documentation can be found [here](https://bit.ly/ccs-wiki)
+The **short version** can be found [here](https://github.com/clickcrystals-development/ClickCrystalsScripting)
+<br>
+The **legacy version** can be found [here](https://bit.ly/ccs-wiki)
 
 Happy coding and cpvping!
 
@@ -28,64 +30,65 @@ Happy coding and cpvping!
 
 ## What Version Should I Get?
 
-| What You Have | What to get                                                                                                                   |
-|:--------------|:------------------------------------------------------------------------------------------------------------------------------|
-| higher..      | how is that even possible?                                                                                                    |
-| 1.21.8        | [ClickCrystals-1.21.6-1.3.3.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.3) *recommended |
-| 1.21.7        | [ClickCrystals-1.21.6-1.3.3.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.3) *recommended |
-| 1.21.6        | [ClickCrystals-1.21.6-1.3.3.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.3) *recommended |
-| 1.21.5        | [ClickCrystals-1.21.5-1.3.2.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.2)              |
-| 1.21.4        | not supported                                                                                                                 |
-| 1.21.3        | not supported                                                                                                                 |
-| 1.21.2        | not supported                                                                                                                 |
-| 1.21.1        | [ClickCrystals-1.21-1.2.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.2.9)                |
-| 1.21          | [ClickCrystals-1.21-1.2.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.2.9)                |
-| 1.20.6        | [ClickCrystals-1.20.6-1.2.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.2.9)              |
-| 1.20.5        | not supported                                                                                                                 |
-| 1.20.4        | [ClickCrystals-1.20.4-1.2.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.2.9)              |
-| 1.20.3        | [ClickCrystals-1.20.4-1.2.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.2.9)              |
-| 1.20.2        | [ClickCrystals-1.20.2-1.2.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.2.9)              |
-| 1.20.1        | [ClickCrystals-1.20-1.2.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.2.9)                |
-| 1.20          | [ClickCrystals-1.20-1.2.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.2.9)                |
-| ..lower       | cry                                                                                                                           |                                                                                                                       |                                                                                                                     |
+| What You Have | What to get                                                                                                                 |
+|:--------------|:----------------------------------------------------------------------------------------------------------------------------|
+| higher..      | how is that even possible?                                                                                                  |
+| 26.1.2        | [ClickCrystals-26.1-1.4.0.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.4.0) *recommended |
+| 26.1.1        | [ClickCrystals-26.1-1.4.0.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.4.0) *recommended |
+| 26.1          | [ClickCrystals-26.1-1.4.0.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.4.0) *recommended |
+| 1.21.11       | [ClickCrystals-1.21.11-1.3.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.9)           |
+| 1.21.10       | [ClickCrystals-1.21.9-1.3.7.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.7)            |
+| 1.21.9        | [ClickCrystals-1.21.9-1.3.7.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.7)            |
+| 1.21.8        | [ClickCrystals-1.21.6-1.3.7.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.7)            |
+| 1.21.7        | [ClickCrystals-1.21.6-1.3.7.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.7)            |
+| 1.21.6        | [ClickCrystals-1.21.6-1.3.7.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.7)            |
+| 1.21.5        | [ClickCrystals-1.21.5-1.3.2.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.3.2)            |
+| 1.21.4        | not supported                                                                                                               |
+| 1.21.3        | not supported                                                                                                               |
+| 1.21.2        | not supported                                                                                                               |
+| 1.21.1        | [ClickCrystals-1.21-1.2.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.2.9)              |
+| 1.21          | [ClickCrystals-1.21-1.2.9.jar](https://github.com/clickcrystals-development/ClickCrystals/releases/tag/v1.2.9)              |
+| ..lower       | cry                                                                                                                         |
 
+
+### Can't Find The Version You're Looking For?
+There's still a chance for you to access latest script syntax!
+Take a look in latest releases for [experimental versions](https://github.com/itzispyder/clickcrystals/releases/latest)!
 
 
 ## Newest Changes
 ```yml
-Version: 1.3.4
+Version: 1.4.0
 
 Scripting:
-  - damage nearest_entity (id)
-  - damage any_entity
-  - damage nearest_block (id)
-  - damage any_block
-  - damage position (x) (y) (z)
-  - interact nearest_entity (id)
-  - interact any_entity
-  - interact nearest_block (id)
-  - interact any_block
-  - interact position (x) (y) (z) # air place AND opening chests through walls possible
-  - if vel_x
-  - if vel_y
-  - if vel_z
-
-Modules:
-  - new module TotemChams
-  - new module AutoClicker
-  - Zoom (RENDERING -> MISC)
-  - FreeLook(RENDERING -> MISC)
-  - CameraClip (RENDERING -> MISC)
+- fix cancel_packet not working
+- fix uncancel_packet not working
+- fix on packet_send not working
+- fix on packet_receive not working
+- fix on place_block running twice
+- fix on break_block running twice
+- notify not working
+- if rot_x <comparator> <num> # pitch
+- if rot_y <comparator> <num> # yaw
+- if facing <direction>
+- if input_active container
+- if input_active inventory # now strictly only works for inventories
 
 Patches:
-  - gui rendering glitches with download screens
-  - message resend module not working properly
-  - totem particles being white when module isnt even enabled
-  - armor bar position offset when HealthAsBar is enabled
+- PacketMapper ID not working in scripts
+- new entity textures not showing up
+- script notify command
+- Zoom module not working
+- custom splash text color
+- GuiCursor not working on Wayland
+- fix NoOverlay fire overlay doesnt get removed
+- add color setting instead of RGB
 
-Tweaks:
-  - renamed ,ccs compile to ,ccs run
-  - added paste script button in scripts tab
+Codebase:
+- renamed mixin classes to fit mojmap conventions
+
+Module:
+- add ElytraShadow
 ```
 
 ![demo](https://cdn.modrinth.com/data/YDYPZdGj/images/d4ad4320aaf5d8589829e3d1691ec5755422a778.png)
@@ -108,13 +111,16 @@ Tweaks:
 |:------------------:|:-------------------------------------------------------------------------------------------------------------:|
 |      AxeSwap       |                          Switch to axe if hitting a shielding opponent with a sword                           |
 |      BowSwap       |         Hotkey flame bow after placing cart. Requires TntSwap and its "instant" setting to be active          |
+|     BreachSwap     |                Switches from sword to breach mace when attacking entities for enhanced damage                 |
 |    ElytraSwitch    |                       Swap to elytra from your hotbar when ever you are double jumping                        |
 |      GapSwap       |                                 Swaps to gap when you right click with sword                                  |
 |      RailSwap      |                                       Swaps to rails after shooting bow                                       |
 |    ShieldSwitch    |                                     Hotkey to shield after clicking sword                                     |
+|      StunSlam      |          Switches from mace to axe when target has shield, then back to mace for devastating combos           |
 |     SwordSwap      |                        Switch to sword after hitting a shielding opponent with an axe                         |
 |      TntSwap       |                                       Swaps to tnt after placing rails                                        |
 |   AutoDisconnect   |                         Disconnect you from the world when a certain condition is met                         |
+|    ChestSorter     |                                Sorts chests that you open with this module on.                                |
 |   EntityStatuses   |                               DEBUG: Sends received EntityStatusPackets in chat                               |
 |     GuiBorders     |                         DEBUG: Renders borders around all ClickCrystals GUI elements                          |
 |     InGameHuds     |                               Manager of all custom ClickCrystals in-game huds                                |
@@ -161,6 +167,7 @@ Tweaks:
 |    TimeChanger     |                                           Changes client world time                                           |
 |    BlockOutline    |                                     Change the color of the block outline                                     |
 |    CrystalSpeed    |                                          Crystals per second counter                                          |
+|    ElytraShadow    |                        Renders a shadow directly below a gliding player on the ground.                        |
 |  EntityIndicator   |                              Indicates entities around you. Players are excluded                              |
 |     GhostTotem     |               Renders a totem in your hand upon dying. Will not work if AutoRespawn is enabled!               |
 |  GlowingEntities   |                                  Having trouble seeing entities in the dark?                                  |
@@ -203,7 +210,7 @@ It is not a cheat. It does not automate any task, for every action the mod prefo
 | `cubecraft`.net         | no    | pending  |
 | `firevanilla`.net       | no    | yes      |
 | `shatteredvanilla`.net  | no    | no       |
-| `pvphub`.me             | no    | yes      |
+| `pvphub`.me             | yes   | yes      |
 | `europemc`.org          | no    | pending  |
 | play.`jackpot`.org      | no    | pending  |
 | `kingsmp`.net           | no    | pending  |
@@ -223,7 +230,7 @@ To stop: complaining it is a cheat/macro.
 ## Have A Good One!
 - Thanks for downloading ClickCrystals!
 - Make sure to give it a star on my [GitHub](https://github.com/itzispyder/clickcrystals)
-- Feeling generous today? [Help support our project!](https://paypal.com/paypalme/thetrouper)
+- Feeling generous today?
 
 ## SPECIAL THANKS AND SHOUTOUT TO
 ```yml

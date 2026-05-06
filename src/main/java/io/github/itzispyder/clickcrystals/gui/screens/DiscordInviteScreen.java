@@ -7,15 +7,15 @@ import io.github.itzispyder.clickcrystals.gui.misc.Tex;
 import io.github.itzispyder.clickcrystals.gui.misc.animators.Animator;
 import io.github.itzispyder.clickcrystals.gui.misc.animators.PollingAnimator;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import static io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils.*;
 
 public class DiscordInviteScreen extends GuiScreen {
 
-    public final int windowWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
-    public final int windowHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
+    public final int windowWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+    public final int windowHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
     public final int baseWidth = 420;
     public final int baseHeight = 240;
     public final int baseX = (int)(windowWidth / 2.0 - baseWidth / 2.0);
@@ -73,7 +73,7 @@ public class DiscordInviteScreen extends GuiScreen {
     }
 
     @Override
-    public void baseRender(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void baseRender(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         renderOpaqueBackground(context);
         drawRoundTexture(context, Tex.Backdrops.BACKDROP_INV, baseX, baseY, baseWidth, baseHeight, 10);
         RenderUtils.fillRoundShadow(context, baseX, baseY, baseWidth, baseHeight, 35, 1, 0xFFE860FC, 0xFFE860FC);
@@ -93,7 +93,7 @@ public class DiscordInviteScreen extends GuiScreen {
     }
 
     @Override
-    public void resize(MinecraftClient client, int width, int height) {
-        client.setScreen(new DiscordInviteScreen());
+    public void resize(int width, int height) {
+        minecraft.setScreen(new DiscordInviteScreen());
     }
 }

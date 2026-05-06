@@ -2,26 +2,22 @@ package io.github.itzispyder.clickcrystals.modules.modules.clickcrystals;
 
 import io.github.itzispyder.clickcrystals.events.EventHandler;
 import io.github.itzispyder.clickcrystals.events.events.client.MouseClickEvent;
+import io.github.itzispyder.clickcrystals.modrinth.ModrinthNoNo;
 import io.github.itzispyder.clickcrystals.modules.Categories;
 import io.github.itzispyder.clickcrystals.modules.modules.ListenerModule;
 import io.github.itzispyder.clickcrystals.util.minecraft.PlayerUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexRendering;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
+@ModrinthNoNo
 public class McpeBlockPlacement extends ListenerModule {
 
     public McpeBlockPlacement() {
@@ -38,14 +34,14 @@ public class McpeBlockPlacement extends ListenerModule {
 
         e.cancel();
 
-        ClientPlayerEntity client = PlayerUtils.player();
-        for (Hand hand : Hand.values()) {
-            ActionResult result = PlayerUtils.getInteractions().interactBlock(client, hand, hit);
-            if (result instanceof ActionResult.Success success && success.swingSource() == ActionResult.SwingSource.CLIENT) {
-                client.swingHand(hand);
+        LocalPlayer client = PlayerUtils.player();
+        for (InteractionHand hand : InteractionHand.values()) {
+            InteractionResult result = PlayerUtils.getInteractions().useItemOn(client, hand, hit);
+            if (result instanceof InteractionResult.Success success && success.swingSource() == InteractionResult.SwingSource.CLIENT) {
+                client.swing(hand);
                 return;
             }
-            if (result instanceof ActionResult.Fail)
+            if (result instanceof InteractionResult.Fail)
                 return;
         }
     }
@@ -53,31 +49,31 @@ public class McpeBlockPlacement extends ListenerModule {
     public BlockHitResult tryUpdate() {
         if (PlayerUtils.invalid())
             return null;
-        if (mc.crosshairTarget == null || mc.crosshairTarget.getType() != HitResult.Type.MISS)
+        if (mc.hitResult == null || mc.hitResult.getType() != HitResult.Type.MISS)
             return null;
 
-        ClientPlayerEntity p = PlayerUtils.player();
-        Direction dir = p.getMovementDirection();
-        BlockPos foot = p.getBlockPos().add(0, -1, 0);
-        BlockPos target = this.getDirectionalFootBlock(dir, p.getBlockPos());
-        World world = p.getWorld();
+        LocalPlayer p = PlayerUtils.player();
+        Direction dir = p.getMotionDirection();
+        BlockPos foot = p.blockPosition().offset(0, -1, 0);
+        BlockPos target = this.getDirectionalFootBlock(dir, p.blockPosition());
+        Level world = p.level();
 
-        if (target.toCenterPos().distanceTo(foot.toCenterPos()) > 1.1) // can't place diagonally with a 10% error range
+        if (target.getCenter().distanceTo(foot.getCenter()) > 1.1) // can't place diagonally with a 10% error range
             return null;
         if (world.getBlockState(foot).isAir())
             target = foot;
-        if (!p.isOnGround() || !world.getBlockState(target).isAir())
+        if (!p.onGround() || !world.getBlockState(target).isAir())
             return null;
-        if (!raycastHit(p.getEyePos(), p.getRotationVecClient(), target, 2, 0.1))
+        if (!raycastHit(p.getEyePosition(), p.getForward(), target, 2, 0.1))
             return null;
 
-        return new BlockHitResult(target.toCenterPos(), dir.getOpposite(), target, false);
+        return new BlockHitResult(target.getCenter(), dir.getOpposite(), target, false);
     }
 
-    private boolean raycastHit(Vec3d start, Vec3d dir, BlockPos target, double len, double step) {
-        Box box = Box.from(Vec3d.of(target));
+    private boolean raycastHit(Vec3 start, Vec3 dir, BlockPos target, double len, double step) {
+        AABB box = AABB.unitCubeFromLowerCorner(Vec3.atLowerCornerOf(target));
         for (double i = 0; i <= len; i += step) {
-            Vec3d pos = start.add(dir.multiply(i));
+            Vec3 pos = start.add(dir.scale(i));
             if (box.contains(pos))
                 return true;
         }
@@ -85,12 +81,8 @@ public class McpeBlockPlacement extends ListenerModule {
     }
 
     private BlockPos getDirectionalFootBlock(Direction dir, BlockPos clientPos) {
-        return BlockPos.ofFloored(clientPos.toCenterPos()
+        return BlockPos.containing(clientPos.getCenter()
                 .add(0, -1, 0)
-                .add(dir.getDoubleVector()));
-    }
-
-    private void drawBlockOutline(MatrixStack matrices, VertexConsumer vertexConsumer, World world, Entity entity, double cameraX, double cameraY, double cameraZ, BlockPos pos, BlockState state, int color) {
-        VertexRendering.drawOutline(matrices, vertexConsumer, state.getOutlineShape(world, pos, ShapeContext.of(entity)), pos.getX() - cameraX, pos.getY() - cameraY, pos.getZ() - cameraZ, color);
+                .add(dir.getUnitVec3()));
     }
 }

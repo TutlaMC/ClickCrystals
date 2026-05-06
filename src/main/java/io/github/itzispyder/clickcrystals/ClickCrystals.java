@@ -24,13 +24,9 @@
 package io.github.itzispyder.clickcrystals;
 
 import com.google.gson.Gson;
-import io.github.itzispyder.clickcrystals.client.clickscript.ClickScript;
-import io.github.itzispyder.clickcrystals.client.client.ProfileManager;
-import io.github.itzispyder.clickcrystals.client.system.ClickCrystalsInfo;
-import io.github.itzispyder.clickcrystals.client.system.Version;
-import io.github.itzispyder.clickcrystals.commands.commands.*;
-import io.github.itzispyder.clickcrystals.data.Config;
-import io.github.itzispyder.clickcrystals.data.JsonSerializable;
+import io.github.itzispyder.clickcrystals.client.commands.commands.*;
+import io.github.itzispyder.clickcrystals.client.commands.commands.pixelart.PixelArtCommand;
+import io.github.itzispyder.clickcrystals.client.system.*;
 import io.github.itzispyder.clickcrystals.events.events.world.ClientTickEndEvent;
 import io.github.itzispyder.clickcrystals.events.events.world.ClientTickStartEvent;
 import io.github.itzispyder.clickcrystals.events.listeners.ChatEventListener;
@@ -49,34 +45,47 @@ import io.github.itzispyder.clickcrystals.modules.modules.crystalling.*;
 import io.github.itzispyder.clickcrystals.modules.modules.misc.*;
 import io.github.itzispyder.clickcrystals.modules.modules.optimization.*;
 import io.github.itzispyder.clickcrystals.modules.modules.rendering.*;
-import io.github.itzispyder.clickcrystals.modules.scripts.client.*;
-import io.github.itzispyder.clickcrystals.modules.scripts.macros.*;
-import io.github.itzispyder.clickcrystals.modules.scripts.macros.inventory.GuiDropCmd;
-import io.github.itzispyder.clickcrystals.modules.scripts.macros.inventory.GuiQuickMoveCmd;
-import io.github.itzispyder.clickcrystals.modules.scripts.macros.inventory.GuiSwapCmd;
-import io.github.itzispyder.clickcrystals.modules.scripts.macros.inventory.GuiSwitchCmd;
-import io.github.itzispyder.clickcrystals.modules.scripts.syntax.*;
+import io.github.itzispyder.clickcrystals.scripting.ClickScript;
+import io.github.itzispyder.clickcrystals.scripting.syntax.client.*;
+import io.github.itzispyder.clickcrystals.scripting.syntax.logic.*;
+import io.github.itzispyder.clickcrystals.scripting.syntax.macros.*;
+import io.github.itzispyder.clickcrystals.scripting.syntax.macros.camera.SnapToCmd;
+import io.github.itzispyder.clickcrystals.scripting.syntax.macros.camera.TurnToCmd;
+import io.github.itzispyder.clickcrystals.scripting.syntax.macros.inventory.GuiDropCmd;
+import io.github.itzispyder.clickcrystals.scripting.syntax.macros.inventory.GuiQuickMoveCmd;
+import io.github.itzispyder.clickcrystals.scripting.syntax.macros.inventory.GuiSwapCmd;
+import io.github.itzispyder.clickcrystals.scripting.syntax.macros.inventory.GuiSwitchCmd;
 import io.github.itzispyder.clickcrystals.util.minecraft.ChatUtils;
 import io.github.itzispyder.clickcrystals.util.misc.TickScheduler;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.screen.TitleScreen;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
-import net.minecraft.client.gui.screen.world.SelectWorldScreen;
+import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
+import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import org.lwjgl.glfw.GLFW;
 
 /**
  * ClickCrystals main
- * TODO: (1) Update mod "gradle.properties"
- * TODO: (2) Update background texture (optional)
- * TODO: (3) Update "README.md"
- * TODO: (4) Publishing checklist
- * TODO: (5) GitHub Release
- * TODO: (6) PlanetMC Release
- * TODO: (7) CurseForge Release
- * TODO: (8) Update <a href="https://itzispyder.github.io/clickcrystals/info.json">...</a>
- * TODO: (9) Discord Announcement
+ * TODO: [] launch game & drag network_packets.md to DOCUMENTATION
+ * TODO: [] ./utils entity-textures
+ * TODO: [] Update mod "gradle.properties"
+ * TODO: [] Update background texture (optional)
+ * TODO:
+ * TODO: --- Publishing checklist ---
+ * TODO: GitHub Release
+ * TODO: Modrinth Release
+ * TODO: CurseForge Release
+ * TODO: Update <a href="https://itzispyder.github.io/clickcrystals/info.json">...</a>
+ * TODO: Discord Announcement
+ * TODO:
+ * TODO: --- Update "README.md" ---
+ * TODO: Update changelog
+ * TODO: ./utils scripting -files
+ * TODO: ./utils modules
+ * TODO: ./utils versions
+ * TODO:
+ * TODO: Push to Github
  */
 public final class ClickCrystals implements ModInitializer, Global {
 
@@ -92,7 +101,7 @@ public final class ClickCrystals implements ModInitializer, Global {
     public static final Keybind openModuleKeybind = Keybind.create()
             .id("open-clickcrystals-module-screen")
             .defaultKey(GLFW.GLFW_KEY_APOSTROPHE)
-            .condition((bind, screen) -> screen == null || screen instanceof TitleScreen || screen instanceof MultiplayerScreen || screen instanceof SelectWorldScreen)
+            .condition((bind, screen) -> screen == null || screen instanceof TitleScreen || screen instanceof JoinMultiplayerScreen || screen instanceof SelectWorldScreen)
             .onPress(bind -> UserInputListener.openPreviousScreen())
             .onChange(config::saveKeybind)
             .build();
@@ -104,7 +113,7 @@ public final class ClickCrystals implements ModInitializer, Global {
             .condition((bind, screen) -> screen == null)
             .onPress(bind -> {
                 if (Module.isEnabled(InGameHuds.class)) {
-                    mc.setScreenAndRender(new HudEditScreen());
+                    mc.setScreenAndShow(new HudEditScreen());
                 }
                 else {
                     ChatUtils.sendPrefixMessage("§cThe module §7InGameHuds §cis not enabled! Press this keybind again when it is.");
@@ -118,7 +127,7 @@ public final class ClickCrystals implements ModInitializer, Global {
             .id("command-prefix")
             .defaultKey(GLFW.GLFW_KEY_COMMA)
             .condition((bind, screen) -> screen == null)
-            .onPress(bind -> mc.setScreen(new ChatScreen("")))
+            .onPress(bind -> mc.setScreen(new ChatScreen("", false)))
             .onChange(config::saveKeybind)
             .build();
 
@@ -145,6 +154,8 @@ public final class ClickCrystals implements ModInitializer, Global {
         system.printf("<- Profile set '%s'", system.profiles.profileConfig.getCurrentProfileName());
         system.println("-> checking updates...");
         ClickCrystals.checkUpdates();
+        system.println("-> requesting bulletin announcements...");
+        BulletinBoard.request();
 
         system.println("-> clicking crystals!");
         system.println("ClickCrystals had loaded successfully!");
@@ -167,6 +178,13 @@ public final class ClickCrystals implements ModInitializer, Global {
     }
 
     public void initClickScript() {
+        ClickScript.register(new ExecuteCmd());
+        ClickScript.register(new ExitCmd());
+        ClickScript.register(new FunctionCmd());
+        ClickScript.register(new LoopCmd());
+        ClickScript.register(new PrintCmd());
+        ClickScript.register(new ThrowCmd());
+        ClickScript.register(new DisconnectCmd());
         ClickScript.register(new ModuleCmd());
         ClickScript.register(new DescCmd());
         ClickScript.register(new OnEventCmd());
@@ -203,7 +221,7 @@ public final class ClickCrystals implements ModInitializer, Global {
         ClickScript.register(new AsCmd());
         ClickScript.register(new CancelPacketCmd());
         ClickScript.register(new UncancelPacketCmd());
-        ClickScript.register(new CraftCmd());
+        ClickScript.register(new ToggleInputCmd());
         ScriptedModule.runModuleScripts();
     }
 
@@ -220,6 +238,7 @@ public final class ClickCrystals implements ModInitializer, Global {
         // Commands
         system.addCommand(new VersionCommand());
         system.addCommand(new ToggleCommand());
+        system.addCommand(new TeamCommand());
         system.addCommand(new HelpCommand());
         system.addCommand(new GmcCommand());
         system.addCommand(new GmsCommand());
@@ -230,7 +249,6 @@ public final class ClickCrystals implements ModInitializer, Global {
         system.addCommand(new KeybindsCommand());
         system.addCommand(new RotateCommand());
         system.addCommand(new LookCommand());
-        system.addCommand(new TableGenerator());
         system.addCommand(new ScriptCommand());
         system.addCommand(new ReloadCommand());
         system.addCommand(new FolderCommand());
@@ -261,6 +279,8 @@ public final class ClickCrystals implements ModInitializer, Global {
         // anchors
         system.addModule(new ElytraSwitch());
         system.addModule(new AxeSwap());
+        system.addModule(new BreachSwap());
+        system.addModule(new StunSlam());
         system.addModule(new ShieldSwitch());
         system.addModule(new SwordSwap());
         system.addModule(new GapSwap());
@@ -277,6 +297,7 @@ public final class ClickCrystals implements ModInitializer, Global {
         system.addModule(new EntityStatuses());
         system.addModule(new InvPackets());
         system.addModule(new McpeBlockPlacement());
+        system.addModule(new ChestSorter());
 
         // crystalling
         system.addModule(new CrystAnchor());
@@ -345,11 +366,12 @@ public final class ClickCrystals implements ModInitializer, Global {
         system.addModule(new EntityIndicator());
         system.addModule(new ItemHighlight());
         system.addModule(new TotemChams());
+        system.addModule(new ElytraShadow());
     }
 
     @SuppressWarnings("all")
     public static boolean matchLatestVersion() {
-        return version.isUpToDate(getLatestVersion());
+        return version.isNewerOrEqualTo(getLatestVersion());
     }
 
     public static Version getLatestVersion() {

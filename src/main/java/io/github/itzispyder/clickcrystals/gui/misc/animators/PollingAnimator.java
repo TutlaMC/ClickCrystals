@@ -4,7 +4,7 @@ import java.util.function.BooleanSupplier;
 
 public class PollingAnimator extends Animator {
 
-    private final BooleanSupplier poll;
+    private BooleanSupplier poll;
     private boolean pollSuccess;
 
     public PollingAnimator(int length, BooleanSupplier poll, Animations.AnimationController animationController) {
@@ -24,6 +24,14 @@ public class PollingAnimator extends Animator {
     public double getProgress() {
         poll();
         return super.getProgress();
+    }
+
+    public BooleanSupplier getSupplier() {
+        return poll;
+    }
+
+    public void setSupplier(BooleanSupplier supplier) {
+        poll = supplier;
     }
 
     public void poll() {

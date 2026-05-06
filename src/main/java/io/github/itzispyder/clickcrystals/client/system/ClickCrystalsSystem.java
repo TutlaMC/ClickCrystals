@@ -1,10 +1,7 @@
 package io.github.itzispyder.clickcrystals.client.system;
 
 import io.github.itzispyder.clickcrystals.ClickCrystals;
-import io.github.itzispyder.clickcrystals.client.client.CapeManager;
-import io.github.itzispyder.clickcrystals.client.client.ProfileManager;
-import io.github.itzispyder.clickcrystals.commands.Command;
-import io.github.itzispyder.clickcrystals.data.Config;
+import io.github.itzispyder.clickcrystals.client.commands.Command;
 import io.github.itzispyder.clickcrystals.events.EventBus;
 import io.github.itzispyder.clickcrystals.events.Listener;
 import io.github.itzispyder.clickcrystals.gui.hud.Hud;
@@ -16,6 +13,7 @@ import io.github.itzispyder.clickcrystals.util.StringUtils;
 import io.github.itzispyder.clickcrystals.util.misc.Randomizer;
 import io.github.itzispyder.clickcrystals.util.misc.Scheduler;
 import io.github.itzispyder.clickcrystals.util.misc.TickScheduler;
+import io.github.itzispyder.clickcrystals.util.misc.camera.CameraRotator;
 import net.minecraft.util.Util;
 
 import java.io.File;
@@ -42,6 +40,7 @@ public class ClickCrystalsSystem implements Serializable {
     public final Randomizer random = new Randomizer();
     public final Scheduler scheduler = new Scheduler();
     public final TickScheduler tickScheduler = new TickScheduler();
+    public final CameraRotator cameraRotator = new CameraRotator();
     public final ClickCrystalsLogger logger = new ClickCrystalsLogger(new File(Config.PATH_LOG));
     public final ProfileManager profiles = new ProfileManager();
     private final Map<Class<? extends Module>, Module> modules;
@@ -58,9 +57,17 @@ public class ClickCrystalsSystem implements Serializable {
         this.keybinds = new HashSet<>();
     }
 
+    public void mcExecute(Runnable task) {
+        mc.execute(task);
+    }
+
+    public Runnable mcExecuteRunnable(Runnable task) {
+        return () -> mcExecuteRunnable(task);
+    }
+
     public void openUrl(String url) {
         try {
-            Util.getOperatingSystem().open(new URI(url));
+            Util.getPlatform().openUri(new URI(url));
         } 
         catch (URISyntaxException ex) {
             system.printErr("Failed to open url " + url);
@@ -70,7 +77,7 @@ public class ClickCrystalsSystem implements Serializable {
 
     public void openFile(String path) {
         try {
-            Util.getOperatingSystem().open(new File(path));
+            Util.getPlatform().openFile(new File(path));
         } 
         catch (Exception ex) {
             system.printErr("Failed to open file " + path);
@@ -79,8 +86,8 @@ public class ClickCrystalsSystem implements Serializable {
     }
 
     public void closeCurrentScreen() {
-        if (mc.currentScreen != null)
-            mc.currentScreen.close();
+        if (mc.screen != null)
+            mc.screen.onClose();
     }
 
     public void addCommand(Command command) {
@@ -122,7 +129,8 @@ public class ClickCrystalsSystem implements Serializable {
     }
 
     public Map<Class<? extends Module>, Module> modules() {
-        return new HashMap<>(modules);
+//        return new HashMap<>(modules);
+        return modules;
     }
 
     public Map<String, ScriptedModule> scriptedModules() {

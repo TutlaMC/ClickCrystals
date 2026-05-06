@@ -10,9 +10,9 @@ import io.github.itzispyder.clickcrystals.modules.ModuleSetting;
 import io.github.itzispyder.clickcrystals.modules.settings.*;
 import io.github.itzispyder.clickcrystals.util.StringUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.PlayerUtils;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.sound.SoundInstance;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.sounds.SoundEvents;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -109,7 +109,7 @@ public class ChatPrefix extends Module implements Listener {
         }
 
         String msg = e.getMessage().toLowerCase();
-        String name = PlayerUtils.player().getGameProfile().getName().toLowerCase();
+        String name = PlayerUtils.player().getGameProfile().name().toLowerCase();
 
         if (!msg.isEmpty() && msg.contains(name)) {
             ping();
@@ -119,7 +119,7 @@ public class ChatPrefix extends Module implements Listener {
     public void ping() {
         double v = mentionsVolume.getVal();
         double p = mentionsPitch.getVal();
-        SoundInstance si = PositionedSoundInstance.master(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, (float)p, (float)v);
+        SoundInstance si = SimpleSoundInstance.forUI(SoundEvents.EXPERIENCE_ORB_PICKUP, (float)p, (float)v);
         mc.getSoundManager().play(si);
     }
 

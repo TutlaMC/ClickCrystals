@@ -22,12 +22,12 @@
     ],
     "modmenu":
     [
-      "io.github.itzispyder.clickcrystals.client.client.ModMenuIntegration"
+      "io.github.itzispyder.clickcrystals.client.system.ModMenuIntegration"
     ]
   },
 "depends": {
     "fabricloader": ">=${loader_version}",
-    "fabric": "*",
+    "fabric-api": "*",
     "minecraft": ">=${minecraft_version}"
   },
   "mixins": [

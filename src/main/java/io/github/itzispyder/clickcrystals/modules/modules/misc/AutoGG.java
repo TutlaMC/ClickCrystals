@@ -1,6 +1,5 @@
 package io.github.itzispyder.clickcrystals.modules.modules.misc;
 
-import io.github.itzispyder.clickcrystals.client.networking.EntityStatusType;
 import io.github.itzispyder.clickcrystals.events.EventHandler;
 import io.github.itzispyder.clickcrystals.events.Listener;
 import io.github.itzispyder.clickcrystals.events.events.networking.PacketReceiveEvent;
@@ -12,10 +11,11 @@ import io.github.itzispyder.clickcrystals.modules.settings.SettingSection;
 import io.github.itzispyder.clickcrystals.modules.settings.StringSetting;
 import io.github.itzispyder.clickcrystals.util.minecraft.ChatUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.PlayerUtils;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityEvent;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -80,13 +80,13 @@ public class AutoGG extends Module implements Listener {
 
     @EventHandler
     private void onReceivePacket(PacketReceiveEvent e) {
-        if (e.getPacket() instanceof EntityStatusS2CPacket packet && !PlayerUtils.invalid()) {
-            ClientPlayerEntity p = PlayerUtils.player();
-            Entity ent = packet.getEntity(p.getWorld());
-            int status = packet.getStatus();
-            boolean playerWithinRange = ent instanceof PlayerEntity player && player.getPos().distanceTo(p.getPos()) < distance.getVal() && player != p;
+        if (e.getPacket() instanceof ClientboundEntityEventPacket packet && !PlayerUtils.invalid()) {
+            LocalPlayer p = PlayerUtils.player();
+            Entity ent = packet.getEntity(p.level());
+            int status = packet.getEventId();
+            boolean playerWithinRange = ent instanceof Player player && player.position().distanceTo(p.position()) < distance.getVal() && player != p;
 
-            if (status == EntityStatusType.DEATH && playerWithinRange) {
+            if (status == EntityEvent.DEATH && playerWithinRange) {
                 this.sendRandomMessage();
             }
         }

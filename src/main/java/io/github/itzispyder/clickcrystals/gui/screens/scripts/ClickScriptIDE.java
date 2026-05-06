@@ -1,8 +1,7 @@
 package io.github.itzispyder.clickcrystals.gui.screens.scripts;
 
-import io.github.itzispyder.clickcrystals.client.clickscript.ClickScript;
-import io.github.itzispyder.clickcrystals.commands.commands.ReloadCommand;
-import io.github.itzispyder.clickcrystals.data.Config;
+import io.github.itzispyder.clickcrystals.client.commands.commands.ReloadCommand;
+import io.github.itzispyder.clickcrystals.client.system.Config;
 import io.github.itzispyder.clickcrystals.events.listeners.UserInputListener;
 import io.github.itzispyder.clickcrystals.gui.elements.common.AbstractElement;
 import io.github.itzispyder.clickcrystals.gui.elements.common.display.LoadingIconElement;
@@ -12,23 +11,24 @@ import io.github.itzispyder.clickcrystals.gui.misc.Shades;
 import io.github.itzispyder.clickcrystals.gui.misc.Tex;
 import io.github.itzispyder.clickcrystals.gui.screens.DefaultBase;
 import io.github.itzispyder.clickcrystals.gui.screens.modulescreen.BrowsingScreen;
+import io.github.itzispyder.clickcrystals.gui.screens.modulescreen.ScriptsBrowsingScreen;
 import io.github.itzispyder.clickcrystals.modules.Categories;
 import io.github.itzispyder.clickcrystals.modules.modules.ScriptedModule;
-import io.github.itzispyder.clickcrystals.modules.scripts.Conditionals;
-import io.github.itzispyder.clickcrystals.modules.scripts.InputType;
-import io.github.itzispyder.clickcrystals.modules.scripts.TargetType;
-import io.github.itzispyder.clickcrystals.modules.scripts.client.ConfigCmd;
-import io.github.itzispyder.clickcrystals.modules.scripts.client.DefineCmd;
-import io.github.itzispyder.clickcrystals.modules.scripts.client.ModuleCmd;
-import io.github.itzispyder.clickcrystals.modules.scripts.syntax.OnEventCmd;
+import io.github.itzispyder.clickcrystals.scripting.ClickScript;
+import io.github.itzispyder.clickcrystals.scripting.components.Conditionals;
+import io.github.itzispyder.clickcrystals.scripting.syntax.InputType;
+import io.github.itzispyder.clickcrystals.scripting.syntax.TargetType;
+import io.github.itzispyder.clickcrystals.scripting.syntax.client.ConfigCmd;
+import io.github.itzispyder.clickcrystals.scripting.syntax.client.DefineCmd;
+import io.github.itzispyder.clickcrystals.scripting.syntax.client.ModuleCmd;
+import io.github.itzispyder.clickcrystals.scripting.syntax.logic.OnEventCmd;
 import io.github.itzispyder.clickcrystals.util.ArrayUtils;
 import io.github.itzispyder.clickcrystals.util.FileValidationUtils;
 import io.github.itzispyder.clickcrystals.util.StringUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
 import io.github.itzispyder.clickcrystals.util.misc.Dimensions;
 import io.github.itzispyder.clickcrystals.util.misc.Voidable;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.io.*;
 import java.util.Arrays;
@@ -173,11 +173,11 @@ public class ClickScriptIDE extends DefaultBase {
     }
 
     @Override
-    public void baseRender(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void baseRender(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         renderOpaqueBackground(context);
 
-        context.getMatrices().pushMatrix();
-        context.getMatrices().translate(baseX, baseY);
+        context.pose().pushMatrix();
+        context.pose().translate(baseX, baseY);
 
         // backdrop
         fillRoundRect(context, 0, 0, baseWidth, baseHeight, 10, Shades.TRANS_BLACK);
@@ -235,7 +235,7 @@ public class ClickScriptIDE extends DefaultBase {
         deleteButton.x = baseX + 10;
         deleteButton.y = baseY + caret;
 
-        context.getMatrices().popMatrix();
+        context.pose().popMatrix();
 
 
         // content
@@ -267,13 +267,19 @@ public class ClickScriptIDE extends DefaultBase {
                 reader.close();
 
                 String finalStr = str;
-                textField.clear();
-                textField.onInput(input -> textField.insertInput(finalStr));
-                textField.shiftEnd();
+                mc.execute(() -> {
+                    textField.clear();
+                    textField.onInput(input -> textField.insertInput(finalStr));
+                    textField.shiftEnd();
+                });
             }
             catch (Exception ex) {
                 system.printErr("Failed to load IDE contents: " + ex.getMessage());
-                UserInputListener.openPreviousScreen();
+                // On first load failure, just show empty editor instead of navigating away
+                mc.execute(() -> {
+                    textField.clear();
+                    textField.insertInput("");
+                });
             }
         }).thenRun(() -> {
             loading.setRendering(false);
@@ -284,8 +290,8 @@ public class ClickScriptIDE extends DefaultBase {
         if (loading.isRendering()) {
             return Voidable.of(null);
         }
+        loading.setRendering(true);
         return Voidable.of(CompletableFuture.runAsync(() -> {
-            loading.setRendering(true);
             try {
                 File file = new File(filepath);
                 if (!FileValidationUtils.validate(file)) {
@@ -295,13 +301,17 @@ public class ClickScriptIDE extends DefaultBase {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(file));
                 writer.write(textField.getContent());
                 writer.close();
+                ReloadCommand.reload();
+                // Refresh the scripts browsing screen if it's open
+                if (mc.screen instanceof ScriptsBrowsingScreen) {
+                    mc.setScreen(new ScriptsBrowsingScreen());
+                }
             }
             catch (Exception ex) {
                 system.printErr("Error: IDE failed to save script");
                 UserInputListener.openPreviousScreen();
             }
-            ReloadCommand.reload();
-        }).thenRun(() -> {
+        }).whenComplete((result, throwable) -> {
             loading.setRendering(false);
         }));
     }
@@ -326,7 +336,7 @@ public class ClickScriptIDE extends DefaultBase {
     }
 
     @Override
-    public void resize(MinecraftClient client, int width, int height) {
+    public void resize(int width, int height) {
         mc.setScreen(new ClickScriptIDE(new File(filepath)));
     }
 }

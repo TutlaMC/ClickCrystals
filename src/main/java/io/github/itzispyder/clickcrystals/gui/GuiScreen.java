@@ -10,10 +10,13 @@ import io.github.itzispyder.clickcrystals.modules.modules.clickcrystals.GuiBorde
 import io.github.itzispyder.clickcrystals.util.minecraft.PlayerUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
 import io.github.itzispyder.clickcrystals.util.misc.Pair;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -36,7 +39,7 @@ public abstract class GuiScreen extends Screen implements Global {
     public Pair<Integer, Integer> cursor;
 
     public GuiScreen(String title) {
-        super(Text.literal(title));
+        super(Component.literal(title));
 
         this.lastHover = System.currentTimeMillis();
         this.mouseMoveListeners = new ArrayList<>();
@@ -52,10 +55,10 @@ public abstract class GuiScreen extends Screen implements Global {
     }
 
     public static boolean matchCurrent(Class<? extends GuiScreen> type) {
-        return mc.currentScreen != null && mc.currentScreen.getClass() == type;
+        return mc.screen != null && mc.screen.getClass() == type;
     }
 
-    public abstract void baseRender(DrawContext context, int mouseX, int mouseY, float delta);
+    public abstract void baseRender(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta);
 
     @Override
     public void tick() {
@@ -65,16 +68,16 @@ public abstract class GuiScreen extends Screen implements Global {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         if (selected != null && selected.isDraggable()) {
             int dx = mouseX - cursor.left;
             int dy = mouseY - cursor.right;
             selected.move(dx, dy);
-            selected.boundIn(context.getScaledWindowWidth(), context.getScaledWindowHeight());
+            selected.boundIn(context.guiWidth(), context.guiHeight());
             this.cursor = Pair.of(mouseX, mouseY);
         }
 
-        super.render(context, mouseX, mouseY, delta);
+        super.extractRenderState(context, mouseX, mouseY, delta);
         this.baseRender(context, mouseX, mouseY, delta);
 
         try {
@@ -106,15 +109,15 @@ public abstract class GuiScreen extends Screen implements Global {
         }
     }
 
-    public void renderOpaqueBackground(DrawContext context) {
+    public void renderOpaqueBackground(GuiGraphicsExtractor context) {
         if (PlayerUtils.invalid()) {
-            renderPanoramaBackground(context,mc.getRenderTickCounter().getTickProgress(true));
-            context.drawTexture(RenderPipelines.GUI_TEXTURED, Tex.Defaults.OPTIONS_BACKGROUND, 0, 0, 0, 0.0F, 0, this.width, this.height, 32, 32);
+            extractPanorama(context,mc.getDeltaTracker().getGameTimeDeltaPartialTick(true));
+            context.blit(RenderPipelines.GUI_TEXTURED, Tex.Defaults.OPTIONS_BACKGROUND, 0, 0, 0, 0.0F, 0, this.width, this.height, 32, 32);
         }
     }
 
     @Override
-    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
 
     }
 
@@ -128,12 +131,16 @@ public abstract class GuiScreen extends Screen implements Global {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
+        int mouseX = (int) click.x();
+        int mouseY = (int) click.y();
+        int button = click.button();
+
         for (int i = children.size() - 1; i >= 0; i--) {
             GuiElement child = children.get(i);
-            if (child.isMouseOver((int)mouseX, (int)mouseY)) {
+            if (child.isMouseOver(mouseX, mouseY)) {
                 this.selected = child;
-                this.cursor = Pair.of((int)mouseX, (int)mouseY);
+                this.cursor = Pair.of(mouseX, mouseY);
                 child.mouseClicked(mouseX, mouseY, button);
                 break;
             }
@@ -147,16 +154,29 @@ public abstract class GuiScreen extends Screen implements Global {
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        super.mouseReleased(mouseX, mouseY, button);
+    public boolean charTyped(CharacterEvent input) {
+        if (selected instanceof Typeable typeable) {
+            typeable.onChar((char)input.codepoint());
+            return true;
+        }
+        return super.charTyped(input);
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent click) {
+        super.mouseReleased(click);
 
         if (!(selected instanceof Typeable)) {
             this.selected = null;
         }
 
+        int mouseX = (int) click.x();
+        int mouseY = (int) click.y();
+        int button = click.button();
+
         for (int i = children.size() - 1; i >= 0; i--) {
             GuiElement child = children.get(i);
-            if (child.isMouseOver((int)mouseX, (int)mouseY)) {
+            if (child.isMouseOver(mouseX, mouseY)) {
                 child.mouseReleased(mouseX, mouseY, button);
                 break;
             }
@@ -170,11 +190,11 @@ public abstract class GuiScreen extends Screen implements Global {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    public boolean mouseDragged(MouseButtonEvent click, double offsetX, double offsetY) {
+        super.mouseDragged(click, offsetX, offsetY);
 
         for (MouseDragCallback callback : mouseDragListeners) {
-            callback.handleMouse(mouseX, mouseY, button, deltaX, deltaY);
+            callback.handleMouse(click.x(), click.y(), click.button(), offsetX, offsetY);
         }
 
         return true;
@@ -213,7 +233,11 @@ public abstract class GuiScreen extends Screen implements Global {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent input) {
+        int keyCode = input.input();
+        int scanCode = input.scancode();
+        int modifiers = input.modifiers();
+
         if (keyCode == GLFW.GLFW_KEY_LEFT_SHIFT || keyCode == GLFW.GLFW_KEY_RIGHT_SHIFT) {
             this.shiftKeyPressed = true;
         }
@@ -224,21 +248,23 @@ public abstract class GuiScreen extends Screen implements Global {
             this.ctrlKeyPressed = true;
         }
 
-        super.keyPressed(keyCode, scanCode, modifiers);
+        if (selected instanceof Typeable typeable && typeable.onKey(keyCode, scanCode)) {
+            return true;
+        }
 
         for (KeyPressCallback callback : keyActionListeners) {
             callback.handleKey(keyCode, ClickType.CLICK, scanCode, modifiers);
         }
 
-        if (selected instanceof Typeable typeable) {
-            typeable.onKey(keyCode, scanCode);
-        }
-
-        return true;
+        return super.keyPressed(input);
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+    public boolean keyReleased(KeyEvent input) {
+        int keyCode = input.input();
+        int scanCode = input.scancode();
+        int modifiers = input.modifiers();
+
         if (keyCode == GLFW.GLFW_KEY_LEFT_SHIFT || keyCode == GLFW.GLFW_KEY_RIGHT_SHIFT) {
             this.shiftKeyPressed = false;
         }
@@ -249,7 +275,7 @@ public abstract class GuiScreen extends Screen implements Global {
             this.ctrlKeyPressed = false;
         }
 
-        super.keyReleased(keyCode, scanCode, modifiers);
+        super.keyReleased(input);
 
         for (KeyPressCallback callback : keyActionListeners) {
             callback.handleKey(keyCode, ClickType.RELEASE, scanCode, modifiers);
@@ -267,7 +293,7 @@ public abstract class GuiScreen extends Screen implements Global {
         return children;
     }
 
-    public void clearChildren() {
+    public void clearWidgets() {
         children.clear();
     }
 
@@ -286,10 +312,10 @@ public abstract class GuiScreen extends Screen implements Global {
         children.remove(child);
     }
 
-    public void tagGuiElement(DrawContext context, int mouseX, int mouseY, GuiElement element) {
+    public void tagGuiElement(GuiGraphicsExtractor context, int mouseX, int mouseY, GuiElement element) {
         String name = element.getClass().getSimpleName();
         double textScale = 0.7;
-        int width = mc.textRenderer.getWidth(name) + 2;
+        int width = mc.font.width(name) + 2;
         RenderUtils.fillRect(context, mouseX, mouseY, (int)(width * textScale), 9, 0xFF000000);
         RenderUtils.drawText(context, name, mouseX + 2, mouseY + (int)(9 * 0.33), 0.7F, true);
     }

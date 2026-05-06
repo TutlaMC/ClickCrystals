@@ -11,8 +11,8 @@ import io.github.itzispyder.clickcrystals.modules.modules.crystalling.ClickCryst
 import io.github.itzispyder.clickcrystals.modules.settings.SettingSection;
 import io.github.itzispyder.clickcrystals.util.minecraft.TextUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ public class ModuleEditScreen extends DefaultBase {
     }
 
     @Override
-    public void baseRender(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void baseRender(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         // default base
         this.renderDefaultBase(context);
 
@@ -66,10 +66,10 @@ public class ModuleEditScreen extends DefaultBase {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        super.mouseClicked(mouseX, mouseY, button);
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
+        super.mouseClicked(click, doubled);
 
-        if (isCategoryHovered(mouseX, mouseY)) {
+        if (isCategoryHovered((int)click.x(), (int)click.y())) {
             BrowsingScreen.currentCategory = module.getCategory();
             UserInputListener.openModulesScreen();
         }
@@ -78,14 +78,14 @@ public class ModuleEditScreen extends DefaultBase {
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        super.mouseReleased(mouseX, mouseY, button);
+    public boolean mouseReleased(MouseButtonEvent click) {
+        super.mouseReleased(click);
         ClickCrystals.config.saveModule(module);
         ClickCrystals.config.save();
         return true;
     }
 
-    private void renderDescription(DrawContext context, int mouseX, int mouseY) {
+    private void renderDescription(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         List<String> lines = TextUtils.wordWrap(module.getDescription(), 250 - 2 - 2, 0.7F);
         int height = lines.size() * 8;
         int caret = mouseY - height + 1;
@@ -124,7 +124,7 @@ public class ModuleEditScreen extends DefaultBase {
     }
 
     @Override
-    public void resize(MinecraftClient client, int width, int height) {
-        client.setScreen(new ModuleEditScreen(module));
+    public void resize(int width, int height) {
+        minecraft.setScreen(new ModuleEditScreen(module));
     }
 }

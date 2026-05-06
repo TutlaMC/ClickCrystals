@@ -7,8 +7,8 @@ import io.github.itzispyder.clickcrystals.gui.misc.animators.Animator;
 import io.github.itzispyder.clickcrystals.gui.misc.animators.PollingAnimator;
 import io.github.itzispyder.clickcrystals.util.minecraft.InteractionUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -47,23 +47,23 @@ public class ButtonElement extends GuiElement {
     }
 
     @Override
-    public void onRender(DrawContext context, int mouseX, int mouseY) {
+    public void onRender(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         int color = Color.lerp(fillColor, hoverColor, animator.getAnimation());
         int clickColor = new Color(hoverColor).darker(2).getHex();
         RenderUtils.fillRoundRect(context, x, y, width, height, borderRadius, mouseDown ? clickColor : color);
-        RenderUtils.drawCenteredText(context, text, x + width / 2, y + (height - mc.textRenderer.fontHeight) / 2, false);
+        RenderUtils.drawCenteredText(context, text, x + width / 2, y + (height - mc.font.lineHeight) / 2, false);
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY, int button) {
-        super.onClick(mouseX, mouseY, button);
-        clickCallback.onClick((int)mouseX, (int)mouseY, this);
-        mouseDown = true;
+    public void mouseClicked(double mouseX, double mouseY, int button) {
+        if (isHovered((int)mouseX, (int)mouseY)) {
+            clickCallback.onClick((int)mouseX, (int)mouseY, this);
+            mouseDown = true;
+        }
     }
 
     @Override
-    public void onRelease(double mouseX, double mouseY, int button) {
-        super.onRelease(mouseX, mouseY, button);
+    public void mouseReleased(double mouseX, double mouseY, int button) {
         mouseDown = false;
     }
 

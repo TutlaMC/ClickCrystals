@@ -1,21 +1,22 @@
 package io.github.itzispyder.clickcrystals.gui.hud;
 
+import com.mojang.blaze3d.platform.Window;
 import io.github.itzispyder.clickcrystals.Global;
 import io.github.itzispyder.clickcrystals.gui.GuiScreen;
 import io.github.itzispyder.clickcrystals.gui.Positionable;
+import io.github.itzispyder.clickcrystals.gui.misc.Color;
 import io.github.itzispyder.clickcrystals.gui.screens.HudEditScreen;
 import io.github.itzispyder.clickcrystals.modules.Module;
 import io.github.itzispyder.clickcrystals.modules.modules.clickcrystals.InGameHuds;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.Window;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 @Environment(EnvType.CLIENT)
 public abstract class Hud implements Positionable, Global {
 
-    public static final int DEFAULT_ARGB = 0x4007CDDF;
+    public static final Color DEFAULT_COLOR = new Color(0x4007CDDF);
     private final Dimension defaultDimension;
     private int x, y, width, height, argb;
     private boolean fixed;
@@ -33,7 +34,7 @@ public abstract class Hud implements Positionable, Global {
     }
 
     public Hud(String id, int x, int y, int width, int height) {
-        this(id, x, y, width, height, new Dimension(x, y, width, height), DEFAULT_ARGB, true);
+        this(id, x, y, width, height, new Dimension(x, y, width, height), DEFAULT_COLOR.getHex(), true);
     }
 
     public Hud(String id, Dimension dim) {
@@ -41,16 +42,16 @@ public abstract class Hud implements Positionable, Global {
     }
 
     public Hud(String id, Dimension dim, Dimension def) {
-        this(id, dim.x, dim.y, dim.width, dim.height, def, DEFAULT_ARGB, true);
+        this(id, dim.x, dim.y, dim.width, dim.height, def, DEFAULT_COLOR.getHex(), true);
     }
 
     public Hud(String id) {
         this(id, new Dimension());
     }
 
-    public abstract void render(DrawContext context, float tickDelta);
+    public abstract void render(GuiGraphicsExtractor context, float tickDelta);
 
-    public void renderBackdrop(DrawContext context) {
+    public void renderBackdrop(GuiGraphicsExtractor context) {
         RenderUtils.fillRoundRect(context, getX(), getY(), getWidth(), getHeight(), 5, getArgb());
     }
 

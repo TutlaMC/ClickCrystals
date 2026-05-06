@@ -3,14 +3,16 @@ package io.github.itzispyder.clickcrystals.modules.modules.crystalling;
 import io.github.itzispyder.clickcrystals.events.EventHandler;
 import io.github.itzispyder.clickcrystals.events.Listener;
 import io.github.itzispyder.clickcrystals.events.events.networking.PacketSendEvent;
+import io.github.itzispyder.clickcrystals.modrinth.ModrinthNoNo;
 import io.github.itzispyder.clickcrystals.modules.Categories;
 import io.github.itzispyder.clickcrystals.modules.Module;
 import io.github.itzispyder.clickcrystals.util.minecraft.BlockUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.HotbarUtils;
-import net.minecraft.item.Items;
-import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
+import net.minecraft.world.item.Items;
 
+@ModrinthNoNo
 public class ClickCrystal extends Module implements Listener {
 
     public ClickCrystal() {
@@ -29,8 +31,8 @@ public class ClickCrystal extends Module implements Listener {
 
     @EventHandler
     private void onSendPacket(PacketSendEvent e) {
-        if (e.getPacket() instanceof PlayerActionC2SPacket packet) {
-            if (packet.getAction() != PlayerActionC2SPacket.Action.START_DESTROY_BLOCK) return;
+        if (e.getPacket() instanceof ServerboundPlayerActionPacket packet) {
+            if (packet.getAction() != ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK) return;
             final BlockPos pos = packet.getPos();
             if (!BlockUtils.canCrystalOn(pos)) return;
 

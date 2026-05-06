@@ -1,7 +1,7 @@
 package io.github.itzispyder.clickcrystals.gui.screens.settings;
 
 import io.github.itzispyder.clickcrystals.ClickCrystals;
-import io.github.itzispyder.clickcrystals.data.Config;
+import io.github.itzispyder.clickcrystals.client.system.Config;
 import io.github.itzispyder.clickcrystals.gui.elements.browsingmode.ModuleElement;
 import io.github.itzispyder.clickcrystals.gui.misc.Shades;
 import io.github.itzispyder.clickcrystals.gui.misc.Tex;
@@ -12,9 +12,9 @@ import io.github.itzispyder.clickcrystals.gui.screens.modulescreen.BrowsingScree
 import io.github.itzispyder.clickcrystals.gui.screens.profiles.ProfilesScreen;
 import io.github.itzispyder.clickcrystals.util.minecraft.PlayerUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 
 import java.util.function.BooleanSupplier;
 
@@ -44,7 +44,7 @@ public class SettingScreen extends DefaultBase {
     }
 
     @Override
-    public void baseRender(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void baseRender(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         // default base
         this.renderDefaultBase(context);
 
@@ -57,13 +57,13 @@ public class SettingScreen extends DefaultBase {
     }
 
     @Override
-    public void resize(MinecraftClient client, int width, int height) {
-        client.setScreen(new SettingScreen());
+    public void resize(int width, int height) {
+        minecraft.setScreen(new SettingScreen());
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        super.mouseReleased(mouseX, mouseY, button);
+    public boolean mouseReleased(MouseButtonEvent click) {
+        super.mouseReleased(click);
         ClickCrystals.config.saveKeybinds();
         ClickCrystals.config.save();
         return true;
@@ -85,7 +85,7 @@ public class SettingScreen extends DefaultBase {
         }
 
         @Override
-        public void onRender(DrawContext context, int mouseX, int mouseY) {
+        public void onRender(GuiGraphicsExtractor context, int mouseX, int mouseY) {
             if (isHovered(mouseX, mouseY) && check.getAsBoolean()) {
                 RenderUtils.fillRect(context, x, y, width, height, 0x60FFFFFF);
             }
@@ -94,10 +94,11 @@ public class SettingScreen extends DefaultBase {
         }
 
         @Override
-        public void onClick(double mouseX, double mouseY, int button) {
-            if (check.getAsBoolean()) {
+        public void mouseClicked(double mouseX, double mouseY, int button) {
+            if (check.getAsBoolean() && isHovered((int)mouseX, (int)mouseY)) {
                 destination.run();
             }
+            super.mouseClicked(mouseX, mouseY, button);
         }
     }
 

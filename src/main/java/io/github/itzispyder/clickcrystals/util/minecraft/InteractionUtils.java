@@ -3,15 +3,15 @@ package io.github.itzispyder.clickcrystals.util.minecraft;
 import io.github.itzispyder.clickcrystals.Global;
 import io.github.itzispyder.clickcrystals.events.listeners.TickEventListener;
 import io.github.itzispyder.clickcrystals.events.listeners.UserInputListener;
-import io.github.itzispyder.clickcrystals.interfaces.KeyboardAccessor;
-import io.github.itzispyder.clickcrystals.interfaces.MinecraftClientAccessor;
-import io.github.itzispyder.clickcrystals.interfaces.MouseAccessor;
+import io.github.itzispyder.clickcrystals.mixininterfaces.AccessorKeyboardHandler;
+import io.github.itzispyder.clickcrystals.mixininterfaces.AccessorMouseHandler;
+import io.github.itzispyder.clickcrystals.mixins.AccessorMinecraftClient;
 import io.github.itzispyder.clickcrystals.modules.keybinds.Keybind;
 import io.github.itzispyder.clickcrystals.modules.modules.misc.GuiCursor;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
 import java.util.function.Predicate;
@@ -19,7 +19,7 @@ import java.util.function.Predicate;
 public final class InteractionUtils implements Global {
 
     public static void inputAttack() {
-        ((MinecraftClientAccessor) mc).inputAttack();
+        ((AccessorMinecraftClient) mc).inputAttack();
     }
 
     public static void inputAttack(long ms) {
@@ -27,7 +27,7 @@ public final class InteractionUtils implements Global {
     }
 
     public static void inputUse() {
-        ((MinecraftClientAccessor) mc).inputUse();
+        ((AccessorMinecraftClient) mc).inputUse();
     }
 
     public static void inputUse(long ms) {
@@ -94,10 +94,25 @@ public final class InteractionUtils implements Global {
         InvUtils.dropSlot(InvUtils.selected(), true);
     }
 
+    public static void toggleInventory(boolean toggle) {
+        if (toggle) {
+            if (mc.screen == null)
+                mc.execute(() -> mc.setScreen(new InventoryScreen(PlayerUtils.player())));
+        }
+        else {
+            if (mc.screen instanceof InventoryScreen inv)
+                mc.execute(inv::onClose);
+        }
+    }
+
+    public static void toggleKey(int key, int scan, boolean toggle) {
+        ((AccessorKeyboardHandler) mc.keyboardHandler).clickCrystals$toggleKey(key, scan, toggle);
+    }
+
     public static void inputToggleSprint() {
-        mc.options.getSprintToggled().setValue(true);
-        if (!mc.options.sprintKey.isPressed()) {
-            mc.options.sprintKey.setPressed(true);
+        mc.options.toggleSprint().set(true);
+        if (!mc.options.keySprint.isDown()) {
+            mc.options.keySprint.setDown(true);
         }
     }
 
@@ -106,8 +121,8 @@ public final class InteractionUtils implements Global {
             return;
         }
 
-        if (mc.currentScreen instanceof InventoryScreen inv) {
-            mc.execute(inv::close);
+        if (mc.screen instanceof InventoryScreen inv) {
+            mc.execute(inv::onClose);
         }
         else {
             mc.execute(() -> mc.setScreen(new InventoryScreen(PlayerUtils.player())));
@@ -119,8 +134,8 @@ public final class InteractionUtils implements Global {
             return false;
         var p = PlayerUtils.player();
 
-        StatusEffectInstance s = p.getStatusEffect(StatusEffects.STRENGTH);
-        StatusEffectInstance w = p.getStatusEffect(StatusEffects.WEAKNESS);
+        MobEffectInstance s = p.getEffect(MobEffects.STRENGTH);
+        MobEffectInstance w = p.getEffect(MobEffects.WEAKNESS);
 
         if (s == null && w == null) {
             return true;
@@ -148,23 +163,27 @@ public final class InteractionUtils implements Global {
     }
 
     public static Point getCursor() {
-        return new Point((int)GuiCursor.getCursorX(mc.mouse.getX()), (int)GuiCursor.getCursorY(mc.mouse.getY()));
+        return new Point((int)GuiCursor.getCursorX(mc.mouseHandler.xpos()), (int)GuiCursor.getCursorY(mc.mouseHandler.ypos()));
     }
 
     public static void leftClick() {
-        ((MouseAccessor) mc.mouse).leftClick();
+        ((AccessorMouseHandler) mc.mouseHandler).clickCrystals$leftClick();
     }
 
     public static void rightClick() {
-        ((MouseAccessor) mc.mouse).rightClick();
+        ((AccessorMouseHandler) mc.mouseHandler).clickCrystals$rightClick();
     }
 
     public static void middleClick() {
-        ((MouseAccessor) mc.mouse).middleClick();
+        ((AccessorMouseHandler) mc.mouseHandler).clickCrystals$middleClick();
+    }
+
+    public static void mouseScroll(double amount) {
+        ((AccessorMouseHandler) mc.mouseHandler).clickCrystals$scroll(amount);
     }
 
     public static void pressKey(int key, int scan) {
-        ((KeyboardAccessor) mc.keyboard).pressKey(key, scan);
+        ((AccessorKeyboardHandler) mc.keyboardHandler).clickCrystals$pressKey(key, scan);
     }
 
     public static void pressKeyExtendedName(String name) {

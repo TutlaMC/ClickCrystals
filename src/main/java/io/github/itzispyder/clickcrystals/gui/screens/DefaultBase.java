@@ -1,5 +1,6 @@
 package io.github.itzispyder.clickcrystals.gui.screens;
 
+import io.github.itzispyder.clickcrystals.client.system.BulletinBoard;
 import io.github.itzispyder.clickcrystals.events.listeners.UserInputListener;
 import io.github.itzispyder.clickcrystals.gui.elements.browsingmode.CategoryElement;
 import io.github.itzispyder.clickcrystals.gui.elements.common.AbstractElement;
@@ -9,16 +10,16 @@ import io.github.itzispyder.clickcrystals.gui.screens.settings.SettingScreen;
 import io.github.itzispyder.clickcrystals.modules.Categories;
 import io.github.itzispyder.clickcrystals.modules.Category;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class DefaultBase extends AnimatedBase {
 
-    public final int windowWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
-    public final int windowHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
+    public final int windowWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+    public final int windowHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
     public final int baseWidth = 420;
     public final int baseHeight = 240;
     public final int baseX = (int)(windowWidth / 2.0 - baseWidth / 2.0);
@@ -31,8 +32,13 @@ public abstract class DefaultBase extends AnimatedBase {
     public final List<CategoryElement> navlistModules = new ArrayList<>();
     protected final AbstractElement buttonSearch, buttonHome, buttonModules, buttonNews, buttonSettings;
 
+    private int unreadAnnouncementsCount;
+
     public DefaultBase(String title) {
         super(title);
+
+        if (BulletinBoard.isCurrentValid())
+            this.unreadAnnouncementsCount = BulletinBoard.getCurrent().getUnreadCount();
 
         int caret = 40;
         for (Category category : Categories.getCategories().values()) {
@@ -96,11 +102,17 @@ public abstract class DefaultBase extends AnimatedBase {
         this.addChild(buttonSettings);
     }
 
-    public void renderDefaultBase(DrawContext context) {
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(context, mouseX, mouseY, delta);
+        this.renderAnnouncementPing(context);
+    }
+
+    public void renderDefaultBase(GuiGraphicsExtractor context) {
         renderOpaqueBackground(context);
 
-        context.getMatrices().pushMatrix();
-        context.getMatrices().translate(baseX, baseY);
+        context.pose().pushMatrix();
+        context.pose().translate(baseX, baseY);
 
         // backdrop
         RenderUtils.fillRoundRect(context, 0, 0, baseWidth, baseHeight, 10, Shades.TRANS_BLACK);
@@ -156,6 +168,20 @@ public abstract class DefaultBase extends AnimatedBase {
         caret += 8;
         RenderUtils.drawText(context, "§bI-No-oNe §8(dev) ", 15, caret, 0.65F, false);
 
-        context.getMatrices().popMatrix();
+        context.pose().popMatrix();
+    }
+
+    private void renderAnnouncementPing(GuiGraphicsExtractor context) {
+        if (this instanceof SearchScreen) // looks ugly with search
+            return;
+        if (unreadAnnouncementsCount <= 0)
+            return;
+
+        int pingX = contentX - 40;
+        int pingY = contentY + 156;
+        String pingLabel = unreadAnnouncementsCount + " Unread";
+        int pingLabelWidth = 3 + (int)(font.width(pingLabel) * 0.6F) + 3;
+        RenderUtils.fillRoundRect(context, pingX, pingY, pingLabelWidth, 10, 5, 0xFFFF3030);
+        RenderUtils.drawText(context, pingLabel, pingX + 3, pingY + 3, 0.6F, false);
     }
 }

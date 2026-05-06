@@ -8,8 +8,8 @@ import io.github.itzispyder.clickcrystals.gui.misc.animators.Animator;
 import io.github.itzispyder.clickcrystals.gui.misc.organizers.GridOrganizer;
 import io.github.itzispyder.clickcrystals.modules.Module;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.KeyEvent;
 
 import java.util.Comparator;
 import java.util.List;
@@ -33,11 +33,10 @@ public class SearchScreen extends DefaultBase {
     }
 
     @Override
-    public void baseRender(DrawContext context, int mouseX, int mouseY, float delta) {
-        //RenderUtils.fillGradient(context, 0, 0, windowWidth, windowHeight, 0xA03873A9, 0xA0000000);
-
-        context.getMatrices().pushMatrix();
-        context.getMatrices().translate(baseX, baseY);
+    public void baseRender(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        renderDefaultBase(context);
+        context.pose().pushMatrix();
+        context.pose().translate(baseX, baseY);
 
         // backdrop
         RenderUtils.fillRoundRect(context, 0, 0, baseWidth, baseHeight, 10, Shades.TRANS_BLACK);
@@ -72,7 +71,7 @@ public class SearchScreen extends DefaultBase {
         buttonSettings.x = baseX + 10;
         buttonSettings.y = baseY + caret - translation;
 
-        context.getMatrices().popMatrix();
+        context.pose().popMatrix();
 
         // content
         caret = contentY + 10;
@@ -111,14 +110,14 @@ public class SearchScreen extends DefaultBase {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        super.keyPressed(keyCode, scanCode, modifiers);
+    public boolean keyPressed(KeyEvent e) {
+        super.keyPressed(e);
         filterByQuery(searchbar);
         return true;
     }
 
     @Override
-    public void resize(MinecraftClient client, int width, int height) {
-        client.setScreen(new SearchScreen());
+    public void resize(int width, int height) {
+        minecraft.setScreen(new SearchScreen());
     }
 }

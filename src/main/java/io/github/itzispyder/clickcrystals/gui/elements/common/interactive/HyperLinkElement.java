@@ -2,7 +2,7 @@ package io.github.itzispyder.clickcrystals.gui.elements.common.interactive;
 
 import io.github.itzispyder.clickcrystals.gui.GuiElement;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class HyperLinkElement extends GuiElement {
 
@@ -15,7 +15,7 @@ public class HyperLinkElement extends GuiElement {
         this.name = name;
         this.textScale = textScale;
 
-        this.width = (int)(mc.textRenderer.getWidth(name) * textScale);
+        this.width = (int)(mc.font.width(name) * textScale);
         this.height = (int)(textScale * 10);
     }
 
@@ -24,7 +24,7 @@ public class HyperLinkElement extends GuiElement {
     }
 
     @Override
-    public void onRender(DrawContext context, int mouseX, int mouseY) {
+    public void onRender(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         int color = isHovered(mouseX, mouseY) ? 0xFF55FFFF : 0xFF00AAAA;
         RenderUtils.drawText(context, "§3" + name, x, y, textScale, false);
         RenderUtils.drawHorLine(context, x, y + height + 1, width, color);
@@ -32,8 +32,11 @@ public class HyperLinkElement extends GuiElement {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void onClick(double mouseX, double mouseY, int button) {
-        system.openUrl(url);
+    public void mouseClicked(double mouseX, double mouseY, int button) {
+        if (isHovered((int)mouseX, (int)mouseY)) {
+            system.openUrl(url);
+        }
+        super.mouseClicked(mouseX, mouseY, button);
     }
 
     public String getUrl() {

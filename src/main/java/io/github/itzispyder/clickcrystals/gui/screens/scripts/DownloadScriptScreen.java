@@ -1,8 +1,7 @@
 package io.github.itzispyder.clickcrystals.gui.screens.scripts;
 
-import io.github.itzispyder.clickcrystals.client.clickscript.ScriptFormatter;
-import io.github.itzispyder.clickcrystals.commands.commands.ReloadCommand;
-import io.github.itzispyder.clickcrystals.data.Config;
+import io.github.itzispyder.clickcrystals.client.commands.commands.ReloadCommand;
+import io.github.itzispyder.clickcrystals.client.system.Config;
 import io.github.itzispyder.clickcrystals.events.listeners.UserInputListener;
 import io.github.itzispyder.clickcrystals.gui.GuiElement;
 import io.github.itzispyder.clickcrystals.gui.elements.common.display.LoadingIconElement;
@@ -15,13 +14,13 @@ import io.github.itzispyder.clickcrystals.gui.misc.animators.Animator;
 import io.github.itzispyder.clickcrystals.gui.misc.animators.PollingAnimator;
 import io.github.itzispyder.clickcrystals.gui.misc.organizers.GridOrganizer;
 import io.github.itzispyder.clickcrystals.gui.screens.AnimatedBase;
+import io.github.itzispyder.clickcrystals.scripting.ScriptFormatter;
 import io.github.itzispyder.clickcrystals.util.FileValidationUtils;
 import io.github.itzispyder.clickcrystals.util.StringUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.InteractionUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.TextUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.joml.Matrix3x2f;
 
 import java.io.File;
@@ -81,7 +80,7 @@ public class DownloadScriptScreen extends AnimatedBase {
     }
 
     @Override
-    public void baseRender(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void baseRender(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         renderOpaqueBackground(context);
 
         // backdrop
@@ -101,16 +100,16 @@ public class DownloadScriptScreen extends AnimatedBase {
         this.searchbar.y = caret;
     }
 
-    public void renderTitle(DrawContext context, int caret) {
+    public void renderTitle(GuiGraphicsExtractor context, int caret) {
         String titleText = "ClickCrystals Scripting Archive";
-        int textW = mc.textRenderer.getWidth(titleText) + 20;
+        int textW = mc.font.width(titleText) + 20;
         int textX = baseX + (baseWidth - textW) / 2;
 
-        Matrix3x2f matrices = context.getMatrices().pushMatrix();
+        Matrix3x2f matrices = context.pose().pushMatrix();
 //        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-12), textX, caret, 0);
         matrices.rotateAbout((float)Math.toRadians(-12), textX, caret);
         RenderUtils.drawTexture(context, Tex.ICON, textX - 12, caret - 7, 20, 20);
-        context.getMatrices().popMatrix();
+        context.pose().popMatrix();
 
         RenderUtils.drawText(context, titleText, textX + 10, caret, false);
     }
@@ -149,8 +148,8 @@ public class DownloadScriptScreen extends AnimatedBase {
     }
 
     @Override
-    public void resize(MinecraftClient client, int width, int height) {
-        client.setScreen(new DownloadScriptScreen());
+    public void resize(int width, int height) {
+        minecraft.setScreen(new DownloadScriptScreen());
     }
 
     public class FilterButton extends GuiElement {
@@ -165,11 +164,11 @@ public class DownloadScriptScreen extends AnimatedBase {
             super(x, y, w, 0);
             this.filter = filter;
             this.name = StringUtils.capitalizeWords(filter.name());
-            this.setHeight(2 + mc.textRenderer.fontHeight + 2);
+            this.setHeight(2 + mc.font.lineHeight + 2);
         }
 
         @Override
-        public void onRender(DrawContext context, int mouseX, int mouseY) {
+        public void onRender(GuiGraphicsExtractor context, int mouseX, int mouseY) {
             int fill = Color.WHITE.getHexCustomAlpha(0.5 * animator.getAnimation());
             RenderUtils.fillRoundRect(context, x, y, width, height, 3, fill);
             RenderUtils.drawCenteredText(context, name, x + width / 2, y + (height - 6) / 2, 0.9F, false);
@@ -180,10 +179,11 @@ public class DownloadScriptScreen extends AnimatedBase {
         }
 
         @Override
-        public void onClick(double mouseX, double mouseY, int button) {
-            super.onClick(mouseX, mouseY, button);
-            currentFilter = filter;
-            filterQuery(true);
+        public void mouseClicked(double mouseX, double mouseY, int button) {
+            if (isHovered((int)mouseX, (int)mouseY)) {
+                currentFilter = filter;
+                filterQuery(true);
+            }
         }
 
         public ScriptFilter getFilter() {
@@ -355,7 +355,7 @@ public class DownloadScriptScreen extends AnimatedBase {
         }
 
         @Override
-        public void onRender(DrawContext context, int mouseX, int mouseY) {
+        public void onRender(GuiGraphicsExtractor context, int mouseX, int mouseY) {
             int caret = y;
             int margin = x;
             double hoverDelta = owned ? 0.0 : animator.getAnimation();
@@ -381,7 +381,7 @@ public class DownloadScriptScreen extends AnimatedBase {
             caret += 15;
             for (String line : TextUtils.wordWrap(script.desc, width - 10, 0.8F)) {
                 RenderUtils.drawText(context, line, margin, caret, 0.8F, false);
-                caret = (int)(caret + mc.textRenderer.fontHeight * 0.8F);
+                caret = (int)(caret + mc.font.lineHeight * 0.8F);
             }
 
             // content
@@ -394,15 +394,15 @@ public class DownloadScriptScreen extends AnimatedBase {
             List<String> lines = TextUtils.wordWrap(script.contents, width - 20, 0.5F);
             int max = Math.min(lines.size(), 50);
 
-            context.getMatrices().pushMatrix();
+            context.pose().pushMatrix();
             context.enableScissor(margin, caret, margin + width - 10, y + height - 5);
             for (int i = 0; i < max; i++) {
                 String line = lines.get(i);
                 RenderUtils.drawText(context, line, margin, caret, 0.4F, false);
-                caret = (int)(caret + mc.textRenderer.fontHeight * 0.4F);
+                caret = (int)(caret + mc.font.lineHeight * 0.4F);
             }
             context.disableScissor();
-            context.getMatrices().popMatrix();
+            context.pose().popMatrix();
 
             RenderUtils.fillVerticalGradient(context, x, y + height - 5 - 20, width, 20, 0x00323232, 0xFF323232);
 
@@ -411,9 +411,9 @@ public class DownloadScriptScreen extends AnimatedBase {
         }
 
         @Override
-        public void onClick(double mouseX, double mouseY, int button) {
-            super.onClick(mouseX, mouseY, button);
-
+        public void mouseClicked(double mouseX, double mouseY, int button) {
+            if (!isHovered((int)mouseX, (int)mouseY))
+                return;
             if (button != 0 || downloadStatus.isRendering() || owned)
                 return;
 
@@ -427,9 +427,10 @@ public class DownloadScriptScreen extends AnimatedBase {
                 downloadStatus.setRendering(false);
                 owned = true;
             });
+
         }
 
-        public void renderStatus(DrawContext context) {
+        public void renderStatus(GuiGraphicsExtractor context) {
             int caret = y + height - 15;
             int margin = x + width - 15;
             var tex = owned ? Tex.Icons.RESET : Tex.Icons.DOWNLOAD;

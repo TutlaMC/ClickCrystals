@@ -22,6 +22,10 @@ public interface SettingContainer {
         return KeybindSetting.create();
     }
 
+    default ColorSetting.Builder createColorSetting() {
+        return ColorSetting.create();
+    }
+
     default <T extends Enum<?>> EnumSetting.Builder<T> createEnumSetting(Class<T> type) {
         return EnumSetting.create(type);
     }

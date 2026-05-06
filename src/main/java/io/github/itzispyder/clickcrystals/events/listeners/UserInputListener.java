@@ -24,9 +24,9 @@ import io.github.itzispyder.clickcrystals.modules.keybinds.Keybind;
 import io.github.itzispyder.clickcrystals.util.minecraft.InteractionUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.PlayerUtils;
 import io.github.itzispyder.clickcrystals.util.misc.ManualMap;
-import net.minecraft.client.gui.screen.GameMenuScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.gui.screens.PauseScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -59,7 +59,8 @@ public class UserInputListener implements Listener {
             ModuleEditScreen.class, ModuleEditScreen.class
     );
     private static Class<? extends GuiScreen> previousScreen = null;
-    private static final Set<Integer> pressedKeys = new HashSet<>();
+    private static final PressedKeysTracker pressedKeys = new PressedKeysTracker();
+    private boolean hasOpened = false;
 
     @SuppressWarnings("deprecation")
     public static void openPreviousScreen() {
@@ -98,7 +99,7 @@ public class UserInputListener implements Listener {
     }
 
     public static void scheduleOpenScreen(GuiScreen screen) {
-        if (screen instanceof AnimatedBase base && mc.currentScreen == null) {
+        if (screen instanceof AnimatedBase base && mc.screen == null) {
             boolean bl = PlayerUtils.valid();
             base.setPlayOpenAnimation(bl);
             base.setPlayCloseAnimation(bl);
@@ -146,7 +147,7 @@ public class UserInputListener implements Listener {
     }
 
     private void handleConfigSave(SetScreenEvent e) {
-        if (e.getScreen() instanceof GameMenuScreen) {
+        if (e.getScreen() instanceof PauseScreen) {
             system.println("<- saving data...");
             config.saveKeybinds();
             config.saveHuds();
@@ -177,6 +178,9 @@ public class UserInputListener implements Listener {
         return pressedKeys.contains(key);
     }
 
+    public static PressedKeysTracker getPressedKeys() {
+        return pressedKeys;
+    }
 
     private static class QueuedGuiItemSearchListener {
         private Predicate<ItemStack> item;
@@ -192,6 +196,15 @@ public class UserInputListener implements Listener {
             InteractionUtils.setCursor(e.getX() + 8, e.getY() + 8);
             item = null;
             guiItemSearchQueue.remove(this);
+        }
+    }
+
+    public static class PressedKeysTracker extends ConcurrentLinkedQueue<Integer> {
+        @Override
+        public boolean add(Integer integer) {
+            if (this.contains(integer))
+                return false;
+            return super.add(integer);
         }
     }
 }

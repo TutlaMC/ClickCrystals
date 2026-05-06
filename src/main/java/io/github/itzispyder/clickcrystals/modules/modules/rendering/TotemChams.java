@@ -1,28 +1,42 @@
 package io.github.itzispyder.clickcrystals.modules.modules.rendering;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.itzispyder.clickcrystals.events.EventHandler;
 import io.github.itzispyder.clickcrystals.events.events.client.EntityDamageEvent;
 import io.github.itzispyder.clickcrystals.events.events.networking.PacketReceiveEvent;
 import io.github.itzispyder.clickcrystals.events.events.world.ClientTickEndEvent;
 import io.github.itzispyder.clickcrystals.events.events.world.RenderWorldEvent;
+import io.github.itzispyder.clickcrystals.gui.misc.Color;
 import io.github.itzispyder.clickcrystals.modules.Categories;
+import io.github.itzispyder.clickcrystals.modules.Module;
 import io.github.itzispyder.clickcrystals.modules.ModuleSetting;
 import io.github.itzispyder.clickcrystals.modules.modules.ListenerModule;
 import io.github.itzispyder.clickcrystals.modules.modules.rendering.totemchams.ChamRagDoll;
+import io.github.itzispyder.clickcrystals.modules.modules.rendering.totemchams.ExplodingChamRagDoll;
+import io.github.itzispyder.clickcrystals.modules.modules.rendering.totemchams.FadingChamRagDoll;
 import io.github.itzispyder.clickcrystals.modules.settings.SettingSection;
 import io.github.itzispyder.clickcrystals.util.minecraft.PlayerUtils;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityStatuses;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
+import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityEvent;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TotemChams extends ListenerModule {
 
+    boolean remove = false;
+
     private final SettingSection scGeneral = getGeneralSection();
+    public final ModuleSetting<RagDoll> ragDollState = scGeneral.add(createEnumSetting(RagDoll.class)
+            .name("rag-doll-type")
+            .description("How the rag doll should look like")
+            .def(RagDoll.EXPLODING)
+            .onSettingChange(setting -> {
+                remove = setting.getVal() == RagDoll.FADING;
+            })
+            .build());
     public final ModuleSetting<Boolean> showSelf = scGeneral.add(createBoolSetting()
             .name("show-self")
             .description("Render own totem chams")
@@ -54,29 +68,10 @@ public class TotemChams extends ListenerModule {
             .def(5.0)
             .build()
     );
-    private final SettingSection scColor = createSettingSection("color");
-    public final ModuleSetting<Integer> red = scColor.add(createIntSetting()
-            .name("red")
-            .description("Color value RED")
-            .max(255)
-            .min(0)
-            .def(255)
-            .build()
-    );
-    public final ModuleSetting<Integer> green = scColor.add(createIntSetting()
-            .name("green")
-            .description("Color value GREEN")
-            .max(255)
-            .min(0)
-            .def(125)
-            .build()
-    );
-    public final ModuleSetting<Integer> blue = scColor.add(createIntSetting()
-            .name("blue")
-            .description("Color value BLUE")
-            .max(255)
-            .min(0)
-            .def(125)
+    public final ModuleSetting<Color> color = scGeneral.add(createColorSetting()
+            .name("color")
+            .description("Color of the totem chams")
+            .def(0xFFFF7D7D)
             .build()
     );
     private final SettingSection scExtra = createSettingSection("extra");
@@ -87,7 +82,7 @@ public class TotemChams extends ListenerModule {
             .build()
     );
 
-    private final ConcurrentLinkedQueue<ChamRagDoll> dolls = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<ChamRagDoll<?>> ragDolls = new ConcurrentLinkedQueue<>();
 
     public TotemChams() {
         super("totem-chams", Categories.RENDER, "Renders a nice visual whenever a player's totem pops");
@@ -97,49 +92,54 @@ public class TotemChams extends ListenerModule {
     private void onEntityStatus(PacketReceiveEvent e) {
         if (PlayerUtils.invalid())
             return;
-        if (!(e.getPacket() instanceof EntityStatusS2CPacket packet))
+        if (!(e.getPacket() instanceof ClientboundEntityEventPacket packet))
             return;
-        if (packet.getStatus() != EntityStatuses.USE_TOTEM_OF_UNDYING)
+        if (packet.getEventId() != EntityEvent.PROTECTED_FROM_DEATH)
             return;
 
         Entity entity = packet.getEntity(PlayerUtils.getWorld());
-        if (entity instanceof PlayerEntity player) {
-            if (player == mc.player && !showSelf.getVal())
-                return;
-
-            int maxAge = (int)(this.maxAge.getVal() * 20);
-            ChamRagDoll doll = new ChamRagDoll(player, maxAge);
-            dolls.add(doll);
-        }
+        if (entity instanceof Player player)
+            if (player != mc.player || showSelf.getVal())
+                ragDolls.add(ragDollState.getVal().get(player));
     }
 
     @EventHandler
     private void onEntityDamage(EntityDamageEvent e) {
-        if (PlayerUtils.invalid())
-            return;
-        if (!chamOnDamage.getVal())
+        if (PlayerUtils.invalid() || !chamOnDamage.getVal())
             return;
 
         DamageSource source = e.getSource();
         Entity entity = e.getEntity();
 
-        if (!e.isSelf() && source.getAttacker() == PlayerUtils.player() && entity instanceof PlayerEntity player) {
-            int maxAge = (int)(this.maxAge.getVal() * 20);
-            ChamRagDoll doll = new ChamRagDoll(player, maxAge);
-            dolls.add(doll);
-        }
+        if (!e.isSelf() && source.getEntity() == PlayerUtils.player() && entity instanceof Player player)
+            ragDolls.add(ragDollState.getVal().get(player));
     }
 
     @EventHandler
     private void onTick(ClientTickEndEvent e) {
+        if (remove) {
+            scGeneral.remove(maxVelocity);
+        }
+        else {
+            boolean exists = false;
+            for (int i = 0; i < scGeneral.getSettings().size(); i++) {
+                if (scGeneral.getSettings().get(i) == maxVelocity) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists)
+                scGeneral.getSettings().add(2, maxVelocity);
+        }
+
         if (PlayerUtils.invalid())
             return;
 
-        for (ChamRagDoll doll: dolls) {
+        for (ChamRagDoll<?> doll : ragDolls) {
             if (doll.isAlive())
-                doll.tick(maxVelocity.getVal().floatValue(), gravity.getVal().floatValue());
+                doll.tick(gravity.getVal().floatValue(), maxVelocity.getVal().floatValue());
             else
-                dolls.remove(doll);
+                ragDolls.remove(doll);
         }
     }
 
@@ -148,13 +148,35 @@ public class TotemChams extends ListenerModule {
         if (PlayerUtils.invalid())
             return;
 
-        MatrixStack matrices = e.getMatrices();
-        float tickDelta = e.getTickCounter().getTickProgress(true);
-        for (ChamRagDoll doll : dolls)
+        PoseStack matrices = e.getMatrices();
+        float tickDelta = e.getTickCounter().getGameTimeDeltaPartialTick(true);
+
+        for (ChamRagDoll<?> doll : ragDolls)
             doll.render(matrices, getColor(), tickDelta);
     }
 
     public int getColor() {
-        return 0x40 << 24 | red.getVal() << 16 | green.getVal() << 8 | blue.getVal();
+        return color.getVal().getHexCustomAlpha(0x40);
+    }
+
+    public enum RagDoll {
+        EXPLODING(ExplodingChamRagDoll.class),
+        FADING(FadingChamRagDoll.class);
+
+        private final Class<? extends ChamRagDoll<?>> clazz;
+
+        RagDoll(Class<? extends ChamRagDoll<?>> clazz) {
+            this.clazz = clazz;
+        }
+
+        public ChamRagDoll<?> get(Player player) {
+            try {
+                int maxAge = Module.get(TotemChams.class).maxAge.getVal().intValue() * 20;
+                return clazz.getConstructor(Player.class, int.class).newInstance(player, maxAge);
+            }
+            catch (Exception e) {
+                return null;
+            }
+        }
     }
 }

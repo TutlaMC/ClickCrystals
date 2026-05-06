@@ -1,32 +1,33 @@
 package io.github.itzispyder.clickcrystals.mixins;
 
+import io.github.itzispyder.clickcrystals.gui.misc.Color;
 import io.github.itzispyder.clickcrystals.modules.Module;
 import io.github.itzispyder.clickcrystals.modules.modules.rendering.TotemPopColor;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TotemParticle;
-import net.minecraft.client.world.ClientWorld;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.awt.*;
-
 @Mixin(TotemParticle.class)
-public abstract class MixinTotemParticle extends Particle {
+public abstract class MixinTotemParticle extends SingleQuadParticle {
 
-    protected MixinTotemParticle(ClientWorld world, double x, double y, double z) {
-        super(world, x, y, z);
+    protected MixinTotemParticle(ClientLevel world, double x, double y, double z, TextureAtlasSprite sprite) {
+        super(world, x, y, z, sprite);
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void onRender(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider, CallbackInfo ci) {
+    private void onRender(ClientLevel world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteSet spriteProvider, CallbackInfo ci) {
         TotemPopColor t = Module.get(TotemPopColor.class);
-        if (t.isEnabled()) {
-            Color c = t.getColor();
-            setColor(c.getRed() / 255.0f, c.getGreen() / 255.0f, c.getBlue() / 255.0f);
-            setAlpha(c.getAlpha() / 255f);
-        }
+        if (!t.isEnabled())
+            return;
+
+        Color c = t.color.getVal();
+        setColor(c.getRedF(), c.getGreenF(), c.getBlueF());
+        setAlpha(c.getAlphaF());
     }
 }

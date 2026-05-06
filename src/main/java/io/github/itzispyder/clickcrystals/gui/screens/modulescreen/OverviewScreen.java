@@ -13,8 +13,8 @@ import io.github.itzispyder.clickcrystals.modules.Categories;
 import io.github.itzispyder.clickcrystals.modules.Category;
 import io.github.itzispyder.clickcrystals.modules.Module;
 import io.github.itzispyder.clickcrystals.util.minecraft.render.RenderUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class OverviewScreen extends GuiScreen {
     private ModuleEditElement currentEditing;
     private final String switchModeText = "§e!§7 You're currently browsing ClickCrystals in §fOverview§7 mode,";
     private final AbstractElement switchModeButton = AbstractElement.create()
-            .pos((int)(mc.textRenderer.getWidth(switchModeText) * 0.9 + 12), 2)
+            .pos((int)(mc.font.width(switchModeText) * 0.9 + 12), 2)
             .dimensions(180, 16)
             .onRender((context, mouseX, mouseY, button) -> {
                 if (button.isHovered(mouseX, mouseY)) {
@@ -72,7 +72,7 @@ public class OverviewScreen extends GuiScreen {
     }
 
     @Override
-    public void baseRender(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void baseRender(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         renderOpaqueBackground(context);
 
         RenderUtils.fillRect(context, 0, 0, RenderUtils.width(), 20, 0x90000000);
@@ -80,18 +80,18 @@ public class OverviewScreen extends GuiScreen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (currentEditing != null && !currentEditing.isMouseOver((int)mouseX, (int)mouseY)) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
+        if (currentEditing != null && !currentEditing.isMouseOver((int)click.x(), (int)click.y())) {
             this.removeCurrentEditing();
             return true;
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(click, doubled);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        super.mouseReleased(mouseX, mouseY, button);
+    public boolean mouseReleased(MouseButtonEvent click) {
+        super.mouseReleased(click);
         ClickCrystals.config.saveOverviewScreen(this);
         ClickCrystals.config.save();
         return true;
@@ -131,7 +131,7 @@ public class OverviewScreen extends GuiScreen {
     }
 
     @Override
-    public void resize(MinecraftClient client, int width, int height) {
-        client.setScreen(new OverviewScreen());
+    public void resize(int width, int height) {
+        minecraft.setScreen(new OverviewScreen());
     }
 }

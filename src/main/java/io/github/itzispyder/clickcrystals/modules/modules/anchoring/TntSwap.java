@@ -4,6 +4,7 @@ import io.github.itzispyder.clickcrystals.events.EventHandler;
 import io.github.itzispyder.clickcrystals.events.Listener;
 import io.github.itzispyder.clickcrystals.events.PostActionable;
 import io.github.itzispyder.clickcrystals.events.events.world.BlockPlaceEvent;
+import io.github.itzispyder.clickcrystals.modrinth.ModrinthNoNo;
 import io.github.itzispyder.clickcrystals.modules.Categories;
 import io.github.itzispyder.clickcrystals.modules.Module;
 import io.github.itzispyder.clickcrystals.modules.ModuleSetting;
@@ -11,12 +12,13 @@ import io.github.itzispyder.clickcrystals.modules.settings.BooleanSetting;
 import io.github.itzispyder.clickcrystals.modules.settings.SettingSection;
 import io.github.itzispyder.clickcrystals.util.minecraft.BlockUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.HotbarUtils;
-import net.minecraft.item.Items;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@ModrinthNoNo
 public class TntSwap extends Module implements Listener, PostActionable {
 
     private final SettingSection scGeneral = getGeneralSection();

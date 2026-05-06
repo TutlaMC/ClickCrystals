@@ -4,16 +4,19 @@ import io.github.itzispyder.clickcrystals.Global;
 import io.github.itzispyder.clickcrystals.events.EventHandler;
 import io.github.itzispyder.clickcrystals.events.Listener;
 import io.github.itzispyder.clickcrystals.events.events.world.ClientTickEndEvent;
+import io.github.itzispyder.clickcrystals.modrinth.ModrinthNoNo;
 import io.github.itzispyder.clickcrystals.modules.Categories;
 import io.github.itzispyder.clickcrystals.modules.ModuleSetting;
 import io.github.itzispyder.clickcrystals.modules.modules.DummyModule;
 import io.github.itzispyder.clickcrystals.modules.settings.SettingSection;
 import io.github.itzispyder.clickcrystals.util.minecraft.HotbarUtils;
+import io.github.itzispyder.clickcrystals.util.minecraft.InteractionUtils;
+import io.github.itzispyder.clickcrystals.util.minecraft.InvUtils;
 import io.github.itzispyder.clickcrystals.util.minecraft.PlayerUtils;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.Hand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
+@ModrinthNoNo
 public class ElytraSwitch extends DummyModule implements Listener, Global {
 
     private final SettingSection scGeneral = getGeneralSection();
@@ -30,8 +33,15 @@ public class ElytraSwitch extends DummyModule implements Listener, Global {
             .def(false)
             .build()
     );
+    public final ModuleSetting<Boolean> infiniteDurability = scGeneral.add(createBoolSetting()
+            .name("infinite-elytra-durability")
+            .description("replace elytra with chestplate every ~1 second to prevent durability loss, spam space bar to use efficiently")
+            .def(false)
+            .build()
+    );
 
     private boolean fallFlying;
+    private boolean onGlide;
 
     public ElytraSwitch() {
         super("elytra-switch", Categories.CRYSTAL, "Swap to elytra from your hotbar when ever you are double jumping");
@@ -54,33 +64,52 @@ public class ElytraSwitch extends DummyModule implements Listener, Global {
         if (PlayerUtils.invalid())
             return;
 
-        boolean bl = PlayerUtils.player().isGliding();
-        if (bl && !fallFlying) {
+        boolean bl = PlayerUtils.player().isFallFlying();
+        if (bl && !fallFlying && !onGlide) {
             fallFlying = true;
             onDeparture();
-        }
-        else if (!bl && fallFlying) {
+        } else if (!bl && fallFlying) {
             fallFlying = false;
             onTouchDown();
         }
+        onGlide();
     }
+
+    /**
+     * Based on:
+     * <a href="https://youtu.be/WYIMsWBxIhI?si=spZcNEqDqma9NCDo">...</a>
+     * Recommended to use with fireworks for maximum distance and best results.
+     **/
+    public void onGlide() {
+        onGlide = false;
+        if (PlayerUtils.invalid() || !infiniteDurability.getVal() || !PlayerUtils.player().isFallFlying() || PlayerUtils.player().isSwimming())
+            return;
+        onGlide = true;
+        if (InvUtils.isWearing(Items.ELYTRA)) {
+            HotbarUtils.search(this::isChestplate);
+            if (HotbarUtils.isHoldingEitherHand(this::isChestplate))
+                InteractionUtils.inputUse(system.random.getRandomInt(800, 999));
+        }
+        onGlide = false;
+    }
+
     public void onTouchDown() {
         if (!chestplateSwitch.getVal())
             return;
 
         HotbarUtils.search(this::isChestplate);
-        use();
+        if (HotbarUtils.isHoldingEitherHand(this::isChestplate))
+            InteractionUtils.inputUse();
 
         if (HotbarUtils.isHoldingEitherHand(this::isChestplate))
-            use();
+            InteractionUtils.inputUse();
     }
 
     public void onDeparture() {
         if (rocketSwitch.getVal()) {
             HotbarUtils.search(this::isRocket);
-            HotbarUtils.search(Items.FIREWORK_ROCKET);
-            HotbarUtils.isHolding(Items.FIREWORK_ROCKET);
-            use();
+            if (HotbarUtils.isHolding(Items.FIREWORK_ROCKET))
+                InteractionUtils.inputUse();
         }
     }
 
@@ -89,10 +118,6 @@ public class ElytraSwitch extends DummyModule implements Listener, Global {
     }
 
     public boolean isChestplate(ItemStack stack) {
-        return stack.getItem().getTranslationKey().toLowerCase().contains("chestplate");
-    }
-
-    private void use() {
-        PlayerUtils.getInteractions().interactItem(PlayerUtils.player(), Hand.MAIN_HAND);
+        return stack.getItem().getDescriptionId().toLowerCase().contains("chestplate");
     }
 }

@@ -5,7 +5,7 @@ import io.github.itzispyder.clickcrystals.client.system.Config;
 import io.github.itzispyder.clickcrystals.events.listeners.UserInputListener;
 import io.github.itzispyder.clickcrystals.gui.elements.common.AbstractElement;
 import io.github.itzispyder.clickcrystals.gui.elements.common.display.LoadingIconElement;
-import io.github.itzispyder.clickcrystals.gui.elements.common.interactive.textfield.TextFieldElement;
+import io.github.itzispyder.clickcrystals.gui.elements.common.interactive.TextFieldElement;
 import io.github.itzispyder.clickcrystals.gui.misc.ChatColor;
 import io.github.itzispyder.clickcrystals.gui.misc.Shades;
 import io.github.itzispyder.clickcrystals.gui.misc.Tex;

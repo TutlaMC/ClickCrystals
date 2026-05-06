@@ -1,8 +1,9 @@
-package io.github.itzispyder.clickcrystals.gui.elements.common.interactive;
+package io.github.itzispyder.clickcrystals.gui.elements.common.interactive.textfield;
 
 import io.github.itzispyder.clickcrystals.gui.GuiElement;
 import io.github.itzispyder.clickcrystals.gui.GuiScreen;
 import io.github.itzispyder.clickcrystals.gui.elements.common.Typeable;
+import io.github.itzispyder.clickcrystals.gui.elements.common.interactive.ScrollPanelElement;
 import io.github.itzispyder.clickcrystals.gui.misc.ChatColor;
 import io.github.itzispyder.clickcrystals.util.MathUtils;
 import io.github.itzispyder.clickcrystals.util.StringUtils;
@@ -15,7 +16,9 @@ import net.minecraft.util.FormattedCharSequence;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -32,6 +35,10 @@ public class TextFieldElement extends GuiElement implements Typeable {
     private String styledContent;
     private boolean selectionBlinking, selectedAll;
     private int selectionBlink;
+
+    private final Deque<TextFieldChange> history = new ArrayDeque<>();
+    private long lastEditTime = 0;
+    private final long historyInterval = 600;
 
     public TextFieldElement(String preText, int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -129,6 +136,7 @@ public class TextFieldElement extends GuiElement implements Typeable {
             return true;
         }
         else if (key == GLFW.GLFW_KEY_BACKSPACE) {
+            pushHistory(TextFieldChangeType.REMOVE);
             onInput(currentContent -> selectionStart > 0 && !currentContent.isEmpty()
                     ? currentContent.substring(0, selectionStart - 1) + currentContent.substring(selectionStart)
                     : currentContent);
@@ -136,12 +144,16 @@ public class TextFieldElement extends GuiElement implements Typeable {
             return true;
         }
         else if (key == GLFW.GLFW_KEY_DELETE) {
+            pushHistory(TextFieldChangeType.REMOVE);
             onInput(input -> StringUtils.insertString(content, selectionStart + 1, null));
             return true;
         }
         else if (key == GLFW.GLFW_KEY_V && screen.ctrlKeyPressed) {
-            onInput(input -> insertInput(mc.keyboardHandler.getClipboard()));
-            shiftRight();
+            String content = mc.keyboardHandler.getClipboard();
+            onInput(input -> insertInput(content));
+            for (int i = 0; i <= content.length()-1; i++){
+                shiftRight();
+            }
             return true;
         }
         else if (key == GLFW.GLFW_KEY_C && screen.ctrlKeyPressed && selectedAll) {
@@ -173,6 +185,18 @@ public class TextFieldElement extends GuiElement implements Typeable {
             return true;
         }
         return false;
+    }
+
+    private void pushHistory(TextFieldChangeType type) {
+        long now = System.currentTimeMillis();
+        boolean expired = now - lastEditTime > historyInterval;
+        boolean typeChanged = !history.isEmpty() && history.peekLast().type() != type;
+
+        if (expired || typeChanged) {
+            history.add(new TextFieldChange(type, content, selectionStart));
+        }
+
+        lastEditTime = now;
     }
 
     @Override
@@ -406,4 +430,5 @@ public class TextFieldElement extends GuiElement implements Typeable {
             }
         }
     }
+
 }

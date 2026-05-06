@@ -50,7 +50,22 @@ public abstract class MixinMouseHandlerHandler implements Global, AccessorMouseH
     }
 
     @Override
-    public void leftClick() {
+    public void clickCrystals$toggleLeft(boolean toggle) {
+        onButton(mc.getWindow().handle(), new MouseButtonInfo(0, 0), toggle ? 1 : 0);
+    }
+
+    @Override
+    public void clickCrystals$toggleRight(boolean toggle) {
+        onButton(mc.getWindow().handle(), new MouseButtonInfo(1, 0), toggle ? 1 : 0);
+    }
+
+    @Override
+    public void clickCrystals$toggleMiddle(boolean toggle) {
+        onButton(mc.getWindow().handle(), new MouseButtonInfo(2, 0), toggle ? 1 : 0);
+    }
+
+    @Override
+    public void clickCrystals$leftClick() {
         onButton(mc.getWindow().handle(), new MouseButtonInfo(0, 0), 1);
         system.scheduler.runDelayedTask(() -> mc.execute(() -> {
             onButton(mc.getWindow().handle(), new MouseButtonInfo(0, 0), 0);
@@ -74,12 +89,12 @@ public abstract class MixinMouseHandlerHandler implements Global, AccessorMouseH
     }
 
     @Override
-    public void scroll(double amount) {
+    public void clickCrystals$scroll(double amount) {
         onScroll(mc.getWindow().handle(), 0, amount);
     }
 
     @Override
-    public void setCursorPos(double x, double y) {
+    public void clickCrystals$setCursorPos(double x, double y) {
         this.xpos = x;
         this.ypos = y;
     }

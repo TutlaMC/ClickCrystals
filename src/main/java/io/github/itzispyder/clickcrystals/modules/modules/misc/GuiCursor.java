@@ -87,7 +87,7 @@ public class GuiCursor extends Module implements Listener {
         GLFW.glfwSetCursorPos(win.handle(), rawX, rawY);
         // Update internal mouse state directly for Wayland compatibility,
         // where glfwSetCursorPos silently fails in normal cursor mode
-        ((AccessorMouseHandler) mc.mouseHandler).setCursorPos(rawX, rawY);
+        ((AccessorMouseHandler) mc.mouseHandler).clickCrystals$setCursorPos(rawX, rawY);
     }
 
     public static double getCursorX(double x) {

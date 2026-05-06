@@ -59,7 +59,7 @@ public class UserInputListener implements Listener {
             ModuleEditScreen.class, ModuleEditScreen.class
     );
     private static Class<? extends GuiScreen> previousScreen = null;
-    private static final Set<Integer> pressedKeys = new HashSet<>();
+    private static final PressedKeysTracker pressedKeys = new PressedKeysTracker();
     private boolean hasOpened = false;
 
     @SuppressWarnings("deprecation")
@@ -178,6 +178,9 @@ public class UserInputListener implements Listener {
         return pressedKeys.contains(key);
     }
 
+    public static PressedKeysTracker getPressedKeys() {
+        return pressedKeys;
+    }
 
     private static class QueuedGuiItemSearchListener {
         private Predicate<ItemStack> item;
@@ -193,6 +196,15 @@ public class UserInputListener implements Listener {
             InteractionUtils.setCursor(e.getX() + 8, e.getY() + 8);
             item = null;
             guiItemSearchQueue.remove(this);
+        }
+    }
+
+    public static class PressedKeysTracker extends ConcurrentLinkedQueue<Integer> {
+        @Override
+        public boolean add(Integer integer) {
+            if (this.contains(integer))
+                return false;
+            return super.add(integer);
         }
     }
 }

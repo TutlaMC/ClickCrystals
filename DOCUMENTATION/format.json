@@ -4703,6 +4703,58 @@
     {
       "components": [
         {
+          "acceptingRegex": "(if|if_not)",
+          "optional": false,
+          "leading": true
+        },
+        {
+          "acceptingRegex": "(target_block_face)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "(side|north|south|east|west|up|down)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "",
+          "optional": false,
+          "leading": false
+        }
+      ],
+      "optional": false,
+      "acceptingCodeBlocks": true
+    },
+    {
+      "components": [
+        {
+          "acceptingRegex": "(while|while_not)",
+          "optional": false,
+          "leading": true
+        },
+        {
+          "acceptingRegex": "(target_block_face)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "(side|north|south|east|west|up|down)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "",
+          "optional": false,
+          "leading": false
+        }
+      ],
+      "optional": false,
+      "acceptingCodeBlocks": true
+    },
+    {
+      "components": [
+        {
           "acceptingRegex": "(config)",
           "optional": false,
           "leading": true
@@ -7332,6 +7384,69 @@
         },
         {
           "acceptingRegex": "([\\^~]?-?\\d*(\\.\\d*)?)",
+          "optional": false,
+          "leading": false
+        }
+      ],
+      "optional": false,
+      "acceptingCodeBlocks": false
+    },
+    {
+      "components": [
+        {
+          "acceptingRegex": "(toggle_input)",
+          "optional": false,
+          "leading": true
+        },
+        {
+          "acceptingRegex": "(attack|use|forward|backward|strafe_left|strafe_right|jump|sprint|sneak|lock_cursor|unlock_cursor|left|right|middle|container|inventory|mouse_wheel_up|mouse_wheel_down)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "(true|false)",
+          "optional": false,
+          "leading": false
+        }
+      ],
+      "optional": false,
+      "acceptingCodeBlocks": false
+    },
+    {
+      "components": [
+        {
+          "acceptingRegex": "(toggle_input)",
+          "optional": false,
+          "leading": true
+        },
+        {
+          "acceptingRegex": "(key)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "(\\S+)",
+          "optional": false,
+          "leading": false
+        },
+        {
+          "acceptingRegex": "(true|false)",
+          "optional": false,
+          "leading": false
+        }
+      ],
+      "optional": false,
+      "acceptingCodeBlocks": false
+    },
+    {
+      "components": [
+        {
+          "acceptingRegex": "(toggle_input)",
+          "optional": false,
+          "leading": true
+        },
+        {
+          "acceptingRegex": "(cancel)",
           "optional": false,
           "leading": false
         }

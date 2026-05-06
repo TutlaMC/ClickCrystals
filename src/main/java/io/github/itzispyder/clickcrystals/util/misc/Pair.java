@@ -37,4 +37,11 @@ public class Pair<L, R> {
     public boolean hasRight() {
         return right != null;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Pair<?, ?> pair))
+            return false;
+        return this.left == pair.left && this.right == pair.right;
+    }
 }

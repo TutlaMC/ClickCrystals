@@ -94,6 +94,21 @@ public final class InteractionUtils implements Global {
         InvUtils.dropSlot(InvUtils.selected(), true);
     }
 
+    public static void toggleInventory(boolean toggle) {
+        if (toggle) {
+            if (mc.screen == null)
+                mc.execute(() -> mc.setScreen(new InventoryScreen(PlayerUtils.player())));
+        }
+        else {
+            if (mc.screen instanceof InventoryScreen inv)
+                mc.execute(inv::onClose);
+        }
+    }
+
+    public static void toggleKey(int key, int scan, boolean toggle) {
+        ((AccessorKeyboardHandler) mc.keyboardHandler).clickCrystals$toggleKey(key, scan, toggle);
+    }
+
     public static void inputToggleSprint() {
         mc.options.toggleSprint().set(true);
         if (!mc.options.keySprint.isDown()) {
@@ -152,7 +167,7 @@ public final class InteractionUtils implements Global {
     }
 
     public static void leftClick() {
-        ((AccessorMouseHandler) mc.mouseHandler).leftClick();
+        ((AccessorMouseHandler) mc.mouseHandler).clickCrystals$leftClick();
     }
 
     public static void rightClick() {
@@ -164,7 +179,7 @@ public final class InteractionUtils implements Global {
     }
 
     public static void mouseScroll(double amount) {
-        ((AccessorMouseHandler) mc.mouseHandler).scroll(amount);
+        ((AccessorMouseHandler) mc.mouseHandler).clickCrystals$scroll(amount);
     }
 
     public static void pressKey(int key, int scan) {

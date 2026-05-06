@@ -41,6 +41,11 @@ public class CameraRotator implements Global {
         return this;
     }
 
+    public CameraRotator setCursorLockState(boolean lockCursor) {
+        this.lockCursor = lockCursor;
+        return this;
+    }
+
     public void closeAllTickets() {
         if (tickets.isEmpty())
             return;

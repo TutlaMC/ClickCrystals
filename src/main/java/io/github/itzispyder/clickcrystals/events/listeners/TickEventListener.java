@@ -8,6 +8,8 @@ import io.github.itzispyder.clickcrystals.events.events.world.ClientTickStartEve
 import io.github.itzispyder.clickcrystals.events.events.world.RenderWorldEvent;
 import io.github.itzispyder.clickcrystals.mixininterfaces.AccessorKeyboardHandler;
 import io.github.itzispyder.clickcrystals.modules.keybinds.Keybind;
+import io.github.itzispyder.clickcrystals.scripting.syntax.InputType;
+import io.github.itzispyder.clickcrystals.util.minecraft.InteractionUtils;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -39,6 +41,13 @@ public class TickEventListener implements Listener, Global {
         shouldForward = shouldBackward = shouldStrafeLeft = shouldStrafeRight =
                 shouldSneak = shouldJump = shouldAttack = shouldUse = false;
         heldKeys.clear();
+    }
+
+    public static void cancelToggleInputs() {
+        for (int key : UserInputListener.getPressedKeys())
+            InteractionUtils.toggleKey(key, Keybind.DEFAULT_SCANCODE, false);
+        for (InputType input : InputType.values())
+            input.toggle(false);
     }
 
     public static void forward(long millis) {
@@ -165,6 +174,6 @@ public class TickEventListener implements Listener, Global {
         }
 
         for (int heldKey: heldKeys)
-            ((AccessorKeyboardHandler) mc.keyboardHandler).clickCrystals$pressKey(heldKey, 42);
+            ((AccessorKeyboardHandler) mc.keyboardHandler).clickCrystals$pressKey(heldKey, Keybind.DEFAULT_SCANCODE);
     }
 }

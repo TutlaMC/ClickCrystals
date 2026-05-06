@@ -76,6 +76,7 @@ Here are some examples of command lines:
 - [Switch (switch)](./commands/switch.md)
 - [Teleport (teleport)](./commands/teleport.md)
 - [Throw (throw)](./commands/throw.md)
+- [Toggle Input (toggle_input)](./commands/toggle_input.md)
 - [Turn To (turn_to)](./commands/turn_to.md)
 - [Uncancel Packet (uncancel_packet)](./commands/uncancel_packet.md)
 - [Velocity (velocity)](./commands/velocity.md)

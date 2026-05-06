@@ -298,6 +298,9 @@ public class Conditionals implements Global {
     // @Format (if|if_not) facing (north|south|east|west|up|down) {}
     // @Format (while|while_not) facing (north|south|east|west|up|down) {}
     public static final Conditional FACING;
+    // @Format (if|if_not) target_block_face (side|north|south|east|west|up|down) {}
+    // @Format (while|while_not) target_block_face (side|north|south|east|west|up|down) {}
+    public static final Conditional TARGET_BLOCK_FACE;
 
 
     static {
@@ -305,6 +308,7 @@ public class Conditionals implements Global {
         FALSE = register("false", ctx -> ctx.end(false));
         HOLDING = register("holding", ctx -> ctx.end(true, EntityUtils.isHolding(ctx.entity, ScriptParser.parseItemPredicate(ctx.get(0).toString()))));
         OFF_HOLDING = register("off_holding", ctx -> ctx.end(true, EntityUtils.isOffHolding(ctx.entity, ScriptParser.parseItemPredicate(ctx.get(0).toString()))));
+        TARGET_BLOCK_FACE = register("target_block_face", new ConditionalTargetBlockFace());
         TARGET_BLOCK = register("target_block", ctx -> {
             Predicate<BlockState> test = ScriptParser.parseBlockPredicate(ctx.get(0).toString());
             return ctx.end(true, EntityUtils.getTarget(ctx.entity) instanceof BlockHitResult hit && test.test(PlayerUtils.getWorld().getBlockState(hit.getBlockPos())));

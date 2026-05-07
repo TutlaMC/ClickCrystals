@@ -25,6 +25,6 @@ public class CraftInvCmd extends ScriptCommand implements ThenChainable {
 
 
 
-        executeWithThen(args, 9);
+        executeWithThen(args, 4);
     }
 }
